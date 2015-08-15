@@ -31,6 +31,7 @@ bv80bot
   Connect the BV80 to the PI via USB cable to the port inside the BV80 Dust Bin.
   
   Launch the ros packages from:
+    
     roslaunch bv80bot_node bv80bot.launch
     
   You can set an argument in the /neato_node/launch/bringup-all.launch file to controll mapping vs nav
