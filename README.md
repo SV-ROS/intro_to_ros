@@ -25,7 +25,7 @@ bv80bot
   git clone this repo to the catkin_ws/src folder on the PI
   do a catkin_make on the workspace
   
-  Connect the BV80 to the PI vaia USB cable to the port inside the BV80 Dust Bin.
+  Connect the BV80 to the PI via USB cable to the port inside the BV80 Dust Bin.
   
   Launch the ros packages from:
     roslaunch bv80bot_node bv80bot.launch
