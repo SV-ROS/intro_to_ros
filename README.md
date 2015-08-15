@@ -17,8 +17,10 @@ The driver is based on a modified Neato Driver first created by Michael Ferguson
 bv80bot
 
   The robot is built from a Raspberry PI II SBC and a Neato BV80 robot vacume base.
+  
   Follow the instructions from Ubiquity Robotics for building a ROS image on the PI.
   https://github.com/UbiquityRobotics/ubiquity-misc
+  
   Ensure you install the robot_state_publisher and robot_model packages from source else they will crash.
   
   
@@ -30,7 +32,7 @@ bv80bot
   Launch the ros packages from:
     roslaunch bv80bot_node bv80bot.launch
     
-  you can set an argument in the /neato_node/launch/bringup-all.launch file to controll mapping vs nav
+  You can set an argument in the /neato_node/launch/bringup-all.launch file to controll mapping vs nav
      ...
      <!--
         Set do_map to "true" to run the robot with gmapping to create a map.
