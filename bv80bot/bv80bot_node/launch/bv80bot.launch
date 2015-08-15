@@ -1,0 +1,31 @@
+<launch>
+
+
+  <include file="$(find bv80bot_node)/launch/xbox360_teleop.launch" />
+
+  <arg name="input_cmd_vel_topic"    default="/raw_cmd_vel" />
+  <arg name="feedback_cmd_vel_topic" default="robot_cmd_vel" />
+  <arg name="output_cmd_vel_topic"   default="smoothed_cmd_vel" />
+  
+  <!--
+    Push the left frontal button labeled as 'LB' to activate cmd_vel publishing.
+    Move the left stick around to control the velocity.
+   -->
+  <!--  smooths inputs from cmd_vel_mux/input/teleop_raw to cmd_vel_mux/input/teleop -->
+  <include file="$(find bv80bot_node)/launch/velocity_smoother.launch">
+    <arg name="input_cmd_vel_topic"    value="$(arg input_cmd_vel_topic)" />
+    <arg name="feedback_cmd_vel_topic" value="$(arg feedback_cmd_vel_topic)" />
+    <arg name="output_cmd_vel_topic"   value="$(arg output_cmd_vel_topic)" />
+  </include>  
+  <include file="$(find neato_node)/launch/bringup-all.launch" />
+ 
+  <!-- velocity commands multiplexer -->
+  <!-- node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/ -->
+  <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
+    <param name="yaml_cfg_file" value="$(find bv80bot_node)/param/mux.yaml"/>
+    <remap from="cmd_vel_mux/output" to="/robot_cmd_vel"/>
+    <remap from="cmd_vel_mux/input/navi" to="/cmd_vel"/>
+    <remap from="cmd_vel_mux/input/teleop" to="$(arg output_cmd_vel_topic)" />
+  </node>
+</launch>
+

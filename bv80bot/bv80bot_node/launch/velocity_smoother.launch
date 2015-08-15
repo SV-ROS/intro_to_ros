@@ -1,0 +1,23 @@
+<!-- 
+         Velocity smoother for Teleop
+-->
+<launch>
+    <arg name="input_cmd_vel_topic"    default="raw_cmd_vel" />
+    <arg name="feedback_cmd_vel_topic" default="robot_cmd_vel" />
+    <arg name="output_cmd_vel_topic"   default="smoothed_cmd_vel" />
+    
+    <node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/>
+    
+    <node pkg="nodelet" type="nodelet" name="teleop_velocity_smoother" args="load yocs_velocity_smoother/VelocitySmootherNodelet mobile_base_nodelet_manager">
+        <rosparam file="$(find bv80bot_node)/param/defaults/smoother.yaml" command="load"/>
+        <remap from="teleop_velocity_smoother/smooth_cmd_vel" to="$(arg output_cmd_vel_topic)"/>
+        
+        <remap from="teleop_velocity_smoother/raw_cmd_vel" to="$(arg input_cmd_vel_topic)" />
+        
+        <!-- Robot velocity feedbacks; use the one configured as base default -->
+        <remap from="teleop_velocity_smoother/odometry" to="/odom"/>
+        <remap from="teleop_velocity_smoother/robot_cmd_vel" to="$(arg feedback_cmd_vel_topic)" />
+    </node>
+    
+</launch>
+
