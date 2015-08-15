@@ -12,7 +12,7 @@ Changes to Origional
   
   -AMCL and Move base tuning updates
   
-  -Added arg to switch from mapping the nav modes
+  -Added arg to switch from mapping and nav modes
   
   See Top level README.md for more details.
   
