@@ -15,6 +15,7 @@ The driver is based on a modified Neato Driver first created by Michael Ferguson
 
 --
 bv80bot
+-------
 
   The robot is built from a Raspberry PI II SBC and a Neato BV80 robot vacume base.
   
@@ -33,6 +34,7 @@ bv80bot
     roslaunch bv80bot_node bv80bot.launch
     
   You can set an argument in the /neato_node/launch/bringup-all.launch file to controll mapping vs nav
+     ```
      ...
      <!--
         Set do_map to "true" to run the robot with gmapping to create a map.
@@ -47,6 +49,7 @@ bv80bot
      -->
      <arg name="do_map" default="false" />
      ...
+     ```
     
     
     You should launch rviz on a workstation to view and controll the robot.
