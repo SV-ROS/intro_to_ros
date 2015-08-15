@@ -56,7 +56,7 @@ bv80bot
     
   You should launch rviz on a workstation to view and controll the robot.
     
-  The launch file will  launch the xbox360 joystick telop package from the turtlebot packages, update the bv80bot.launch file to change you controller settings.
+  The launch file will  launch the xbox360 joystick telop package from the turtlebot packages, update the bv80bot.launch file to change your controller settings.
     
   
   
