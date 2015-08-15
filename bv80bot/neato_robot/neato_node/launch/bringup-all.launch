@@ -1,0 +1,23 @@
+<launch>
+  <arg name="do_map" default="false" />
+
+  <node name="laser_to_base" pkg="tf2_ros" type="static_transform_publisher"  args="-0.090 0.0 0.037 0 0 0 1 base_link base_laser_link" />
+	
+
+  <node name="neato" pkg="neato_node" type="neato.py" output="screen">
+    <param name="port" value="/dev/ttyACM0" />
+    <remap from="cmd_vel" to="robot_cmd_vel" />
+  </node>
+ 
+
+   <include unless="$(arg do_map)" file="$(find neato_2dnav)/launch/move_base.launch" />
+
+  <node if="$(arg do_map)" pkg="gmapping" type="slam_gmapping" name="SLAM" args="scan:=/base_scan map:=/gmapping/map" />
+  
+  <param name="robot_description" command="$(find xacro)/xacro.py $(find neato_node)/urdf/neato.urdf.xacro" />
+  <param name="use_gui" value="False"/>
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" />
+  
+  <!-- node name="rviz" type="rviz" pkg="rviz" args="-d $(find neato_node)/neato.rviz" / -->
+
+</launch>
