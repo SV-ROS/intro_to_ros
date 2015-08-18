@@ -15,10 +15,13 @@ The driver is based on a modified Neato Driver first created by Michael Ferguson
 
 --
 bv80bot
+-------
 
   The robot is built from a Raspberry PI II SBC and a Neato BV80 robot vacume base.
+  
   Follow the instructions from Ubiquity Robotics for building a ROS image on the PI.
   https://github.com/UbiquityRobotics/ubiquity-misc
+  
   Ensure you install the robot_state_publisher and robot_model packages from source else they will crash.
   
   
@@ -28,9 +31,13 @@ bv80bot
   Connect the BV80 to the PI via USB cable to the port inside the BV80 Dust Bin.
   
   Launch the ros packages from:
+    
     roslaunch bv80bot_node bv80bot.launch
     
-  you can set an argument in the /neato_node/launch/bringup-all.launch file to controll mapping vs nav
+  You can set an argument in the /neato_node/launch/bringup-all.launch file to controll mapping vs nav
+  
+  
+  ```
      ...
      <!--
         Set do_map to "true" to run the robot with gmapping to create a map.
@@ -45,11 +52,12 @@ bv80bot
      -->
      <arg name="do_map" default="false" />
      ...
+  ```
     
     
-    You should launch rviz on a workstation to view and controll the robot.
+  You should launch rviz on a workstation to view and controll the robot.
     
-    The launch file will  launch the xbox360 joystick telop package from the turtlebot packages, update the bv80bot.launch file to change you controller settings.
+  The launch file will  launch the xbox360 joystick teleop package from the turtlebot packages, update the bv80bot.launch file to change your controller settings/configuration.
     
   
   
