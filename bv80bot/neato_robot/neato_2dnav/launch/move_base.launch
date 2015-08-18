@@ -2,7 +2,7 @@
   <param name="use_sim_time" value="false"/>
 
   <!-- Run the map server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/home-map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/2000lbFullCrop.yaml"/>
 
   <node pkg="amcl" type="amcl" name="amcl" >
     <remap from="scan" to="base_scan" />
