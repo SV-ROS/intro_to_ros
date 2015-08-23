@@ -4,16 +4,16 @@
   <!-- Run the map server -->
   <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/2000lbFullCrop.yaml"/>
 
-  <node pkg="amcl" type="amcl" name="amcl" >
-    <remap from="scan" to="base_scan" />
-  </node>
+    <include file="$(find neato_2dnav)/launch/amcl.launch">
+	<remap from="scan" to="/base_scan" />
+    </include>
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
-    <rosparam file="$(find neato_2dnav)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
-    <rosparam file="$(find neato_2dnav)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
-    <rosparam file="$(find neato_2dnav)/params/local_costmap_params.yaml" command="load" />
-    <rosparam file="$(find neato_2dnav)/params/global_costmap_params.yaml" command="load" />
-    <rosparam file="$(find neato_2dnav)/params/base_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find neato_2dnav)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find neato_2dnav)/param/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find neato_2dnav)/param/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find neato_2dnav)/param/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find neato_2dnav)/param/base_local_planner_params.yaml" command="load" />
   </node>
 
 </launch>

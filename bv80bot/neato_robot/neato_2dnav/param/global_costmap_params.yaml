@@ -1,0 +1,10 @@
+global_costmap:
+  global_frame: /map
+  robot_base_frame: /base_footprint
+  update_frequency: 2.0
+  publish_frequency: 1.0
+  static_map: true
+  footprint_padding: 0.01
+  robot_radius: 0
+  cost_scaling_factor: 9.0
+  transform_tolerance: 2.0 
