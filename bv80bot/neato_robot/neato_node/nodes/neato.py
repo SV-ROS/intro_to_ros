@@ -89,7 +89,7 @@ class NeatoNode:
         self.robot.setBacklight(1)
         self.robot.setLED("Green")
         # main loop of driver
-        r = rospy.Rate(5)
+        r = rospy.Rate(20)
         while not rospy.is_shutdown():
             # notify if low batt
             #if self.robot.getCharger() < 10:
@@ -117,7 +117,7 @@ class NeatoNode:
             d_right =  (right - encoders[1])/1000.0
             encoders = [left, right]
 
-	    print d_left, d_right, encoders
+	    #print d_left, d_right, encoders
 
             dx = (d_left+d_right)/2
             dth = (d_right-d_left)/(self.robot.base_width/1000.0)
@@ -169,7 +169,7 @@ class NeatoNode:
                     sensor.value = b
                     sensor.name = sensor_enum[idx]
                     self.sensorPub.publish(sensor)
-          # wait, then do it again
+            # wait, then do it again
             r.sleep()
 
         # shut down
