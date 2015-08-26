@@ -26,7 +26,7 @@ bv80bot
   
   also install the following:
   ```
-  sudo apt-get install ros-indigo-turtlebot-description ros-indigo-turtlebot-navigation ros-indigo-turtlebot-teleop ros-indigo-yocs-cmd-vel-mux ros-indigo-yocs-velocity-smoother
+  sudo apt-get install ros-indigo-xacro ros-indigo-turtlebot-description ros-indigo-turtlebot-navigation ros-indigo-turtlebot-teleop ros-indigo-yocs-cmd-vel-mux ros-indigo-yocs-velocity-smoother
 ```
   
   git clone this repo to the catkin_ws/src folder on the PI
