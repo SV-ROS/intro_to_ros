@@ -24,6 +24,10 @@ bv80bot
   
   Ensure you install the robot_state_publisher and robot_model packages from source else they will crash.
   
+  also install the following:
+  ```
+  sudo apt-get install ros-indigo-turtlebot-description ros-indigo-turtlebot-navigation ros-indigo-turtlebot-teleop ros-indigo-yocs-cmd-vel-mux ros-indigo-yocs-velocity-smoother
+```
   
   git clone this repo to the catkin_ws/src folder on the PI
   do a catkin_make on the workspace
