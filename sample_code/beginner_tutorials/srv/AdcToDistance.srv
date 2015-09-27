@@ -1,0 +1,4 @@
+int16 adc
+---
+float32 inches
+float32 cm
