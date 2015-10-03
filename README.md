@@ -30,13 +30,16 @@ bv80bot
 ```
   
   Git clone this repo to the catkin_ws/src folder on the PI and you Laptop/PC.
-  <b>Note: do this on both your PC/Laptop and the Raspberry PI.</b>, you need copies of the files on both computers.
+  
+  <b>Note: do this on both your PC/Laptop and the Raspberry PI.</b>, 
+  
+  you need copies of the files on both computers.
   
   ```
   cd ~/catkin_ws/src
   git clone https://github.com/SV-ROS/intro_to_ros.git
   ```
-  do a catkin_make on the workspace
+  do a catkin_make on the workspace (on both computers)
   
   ```
   roscd
@@ -97,7 +100,7 @@ The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml,
   The launch files mentioned above will launch the xbox360 joystick teleop package from the turtlebot packages.
   If you use a different joystick update the file:
   
-  ~/catkin_ws/src/intro_to_ros/bv80bot/bv80bot_node/launch/includebv80bot.launch
+  ~/catkin_ws/src/intro_to_ros/bv80bot/bv80bot_node/launch/include/bv80bot_base.launch
   
   to change your controller settings/configuration.
   
