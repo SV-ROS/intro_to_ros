@@ -1,0 +1,8 @@
+<launch>
+
+
+  <include  file="$(find neato_2dnav)/launch/move_base.launch" />
+
+
+</launch>
+

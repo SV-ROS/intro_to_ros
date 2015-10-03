@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find bv80bot_node)/launch/include/bv80bot_base.launch" />
+</launch>
+

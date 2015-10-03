@@ -1,0 +1,6 @@
+<launch>
+
+  <node pkg="gmapping" type="slam_gmapping" name="SLAM" args="scan:=/scan map:=/map" />
+
+</launch>
+

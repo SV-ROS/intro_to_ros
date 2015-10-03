@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find bv80bot_node)/launch/include/bv80bot_map.launch" />
+  <include file="$(find bv80bot_node)/launch/include/bv80bot_gui.launch" />
+</launch>
+
