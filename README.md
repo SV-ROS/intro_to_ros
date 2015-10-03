@@ -91,7 +91,7 @@ The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml,
     on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_only.launch
     on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_map_gui.launch
     
-  You should now be able to set the robots pose in rviz and set nav goles for the robot to gto with the 2d nav gole button in rviz.
+  You should now be able to set the robots pose in rviz and set nav goals for the robot to goto with the 2d nav goal button in rviz.
     
     
   The launch files mentioned above will launch the xbox360 joystick teleop package from the turtlebot packages.
