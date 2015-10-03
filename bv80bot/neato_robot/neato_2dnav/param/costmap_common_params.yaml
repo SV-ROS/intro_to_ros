@@ -3,5 +3,5 @@ raytrace_range: 5.0
 
 footprint: [[0.18, 0.18], [0.18, -0.18], [-0.08, -0.18], [-0.2, -0.060],[-0.2,0.060],[-0.08, 0.18]]
 
-observation_sources: base_scan
-base_scan: {sensor_frame: /base_laser_link, data_type: LaserScan, topic: /base_scan, marking: true, clearing: true}
+observation_sources: scan
+scan: {sensor_frame: /base_laser_link, data_type: LaserScan, topic: /scan, marking: true, clearing: true}

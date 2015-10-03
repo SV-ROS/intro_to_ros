@@ -2,7 +2,7 @@
   <param name="use_sim_time" value="false"/>
 
   <!-- Run the map server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/google_crop.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/map.yaml"/>
 
   <include file="$(find neato_2dnav)/launch/amcl.launch" />
 

@@ -1,6 +1,13 @@
 <launch>
 
-  <node pkg="gmapping" type="slam_gmapping" name="SLAM" args="scan:=/scan map:=/map" />
+  <node pkg="gmapping" type="slam_gmapping" name="SLAM" args="scan:=/scan map:=/map" >
+     <param name="maxUrange" value="5.0" />
+     <param name="maxRange" value="4.8" />
+     <param name="xmin" value="-50.0" />
+     <param name="ymin" value="-50.0" />
+     <param name="xmax" value="50.0" />
+     <param name="ymax" value="50.0" />
+   </node>
 
 </launch>
 
