@@ -97,7 +97,7 @@ The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml,
   The launch files mentioned above will launch the xbox360 joystick teleop package from the turtlebot packages.
   If you use a different joystick update the file:
   
-  ~/catkin_ws/src/intro_to_ros/bv80bot/bv80bot_node/launch/includebv80bot.launch
+  ~/catkin_ws/src/intro_to_ros/bv80bot/bv80bot_node/launch/include/bv80bot_base.launch
   
   to change your controller settings/configuration.
   
