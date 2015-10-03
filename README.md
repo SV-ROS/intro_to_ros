@@ -52,7 +52,7 @@ bv80bot
   
   Packages for mapping an navigation can be run either on the robot or the PC/Laptop, the following gives the launch     commands for each configuration:
   
-  Mapping Mode:
+  <b>Mapping Mode:</b>
   
     Launch the ros packages for mapping on the robot:
     
@@ -78,7 +78,7 @@ rosrun map_server map_saver
 The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml, map.pgm
 
 
-  Navigation Mode:
+  <b>Navigation Mode:</b>
   
     Launch the ros packages for mapping on the robot (if you saved your map to the PI):
     
