@@ -22,46 +22,82 @@ bv80bot
   Follow the instructions from Ubiquity Robotics for building a ROS image on the PI.
   https://github.com/UbiquityRobotics/ubiquity-misc
   
-  Ensure you install the robot_state_publisher and robot_model packages from source else they will crash.
+  <b>Ensure you install the robot_state_publisher and robot_model packages from source else they will crash.</b>
   
-  also install the following:
+  also install ALL of the following:
   ```
   sudo apt-get install ros-indigo-xacro ros-indigo-turtlebot-description ros-indigo-turtlebot-navigation ros-indigo-turtlebot-teleop ros-indigo-yocs-cmd-vel-mux ros-indigo-yocs-velocity-smoother
 ```
   
   git clone this repo to the catkin_ws/src folder on the PI
+  <b>Note: do this on both your PC/Laptop and the Raspberry PI.</b>, you need copies of the files on both computers.
+  
+  ```
+  cd ~/catkin_ws/src
+  git clone https://github.com/SV-ROS/intro_to_ros.git
+  ```
   do a catkin_make on the workspace
   
-  Connect the BV80 to the PI via USB cable to the port inside the BV80 Dust Bin.
-  
-  Launch the ros packages from:
-    
-    roslaunch bv80bot_node bv80bot.launch
-    
-  You can set an argument in the /neato_node/launch/bringup-all.launch file to controll mapping vs nav
-  
-  
   ```
-     ...
-     <!--
-        Set do_map to "true" to run the robot with gmapping to create a map.
-        Set to "false" to run the robot with amcl to navigate within the map.
-        
-        save the map while it is running in gmapping using:
-           rosrun map_server map_saver map:=/gmapping/map -f <your map name>
-           
-        update the tags in neato_2dnav/launch/move_base.launch to point to your map
-        <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/<your map name>.yaml"/>
-        
-     -->
-     <arg name="do_map" default="false" />
-     ...
+  roscd
+  cd ..
+  catkin_make
   ```
+  
+ 
+  There are a number of different way to launch the robot depending on where you want to run the packages.
+  
+  The robot can be run in two modes - mapping and navigation, you must first run the robot in mapping mode to create a   map to use later for navigation.
+  
+  
+  Packages for mapping an navigation can be run either on the robot or the PC/Laptop, the following gives the launch     commands for each configuration:
+  
+  Mapping Mode:
+    Launch the ros packages for mapping on the robot:
+    
+    on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_map.launch
+    on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_gui_only.launch
     
     
-  You should launch rviz on a workstation to view and controll the robot.
+    Launch the ros packages for mapping on the PC/Laptop:
     
-  The launch file will  launch the xbox360 joystick teleop package from the turtlebot packages, update the bv80bot.launch file to change your controller settings/configuration.
+    on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_only.launch
+    on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_map_gui.launch
+    
+Drive around with the joystick until you have a good enough map.
+
+Once you have crated a map you like you must save it before you stop running the nodes launched above.
+You can save the map to the PI or the Laptop/PC, you should save it to the computer you intend to run the nav nodes on later.
+
+So on the appropreate computer, (PC/Laptop or the PI) save the map as follows:
+```
+roscd neato_2dnav/maps
+rosrun map_server map_saver
+```
+The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml, map.pgm
+
+  Navigation Mode:
+    Launch the ros packages for mapping on the robot (if you saved your map to the PI):
+    
+    on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_map.launch
+    on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_gui_only.launch
+    
+    
+    Launch the ros packages for mapping on the PC/Laptop (if you saved your map to the PC/Laptop):
+    
+    on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_only.launch
+    on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_map_gui.launch
+    
+  You should now be able to set the robots pose in rviz and set nav goles for the robot to gto with the 2d nav gole button in rviz.
+    
+    
+  The launch files mentioned above will launch the xbox360 joystick teleop package from the turtlebot packages.
+  If you use a different joystick update the file:
+  
+  ~/catkin_ws/src/intro_to_ros/bv80bot/bv80bot_node/launch/includebv80bot.launch
+  
+  to change your controller settings/configuration.
+  
     
   
   
