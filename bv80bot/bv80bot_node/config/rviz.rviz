@@ -138,7 +138,7 @@ Visualization Manager:
       Name: Global Cost Map
       Topic: /move_base/global_costmap/costmap
       Value: true
-    - Alpha: 0.7
+    - Alpha: 0.1
       Class: rviz/Map
       Color Scheme: costmap
       Draw Behind: false
@@ -147,34 +147,19 @@ Visualization Manager:
       Topic: /move_base/local_costmap/costmap
       Value: true
     - Class: rviz/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_footprint:
-          Value: true
-        base_laser_link:
-          Value: true
-        base_link:
-          Value: true
-        map:
-          Value: true
-        odom:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: true
       Tree:
-        map:
-          odom:
-            base_footprint:
-              base_link:
-                base_laser_link:
-                  {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -199,7 +184,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 6.03532
+      Distance: 7.93648
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -232,5 +217,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 2144
-  X: 2101
+  X: 2091
   Y: 14
