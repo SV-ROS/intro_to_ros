@@ -30,7 +30,10 @@ bv80bot
 ```
   
   Git clone this repo to the catkin_ws/src folder on the PI and you Laptop/PC.
-  <b>Note: do this on both your PC/Laptop and the Raspberry PI.</b>, you need copies of the files on both computers.
+  
+  <b>Note: do this on both your PC/Laptop and the Raspberry PI.</b>, 
+  
+  you need copies of the files on both computers.
   
   ```
   cd ~/catkin_ws/src
