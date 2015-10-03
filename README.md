@@ -39,7 +39,7 @@ bv80bot
   cd ~/catkin_ws/src
   git clone https://github.com/SV-ROS/intro_to_ros.git
   ```
-  do a catkin_make on the workspace
+  do a catkin_make on the workspace (on both computers)
   
   ```
   roscd
