@@ -4,6 +4,8 @@
   <arg name="feedback_cmd_vel_topic" default="robot_cmd_vel" />
   <arg name="output_cmd_vel_topic"   default="smoothed_cmd_vel" />
 
+
+  <!-- Change this to use a different joystick controller -->
   <include file="$(find bv80bot_node)/launch/include/xbox360_teleop.launch" />
 
   
