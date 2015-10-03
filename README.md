@@ -79,6 +79,7 @@ The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml,
 
 
   Navigation Mode:
+  
     Launch the ros packages for mapping on the robot (if you saved your map to the PI):
     
     on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_map.launch
