@@ -24,12 +24,12 @@ bv80bot
   
   <b>Ensure you install the robot_state_publisher and robot_model packages from source else they will crash.</b>
   
-  also install ALL of the following:
+  Also install ALL of the following:
   ```
   sudo apt-get install ros-indigo-xacro ros-indigo-turtlebot-description ros-indigo-turtlebot-navigation ros-indigo-turtlebot-teleop ros-indigo-yocs-cmd-vel-mux ros-indigo-yocs-velocity-smoother
 ```
   
-  git clone this repo to the catkin_ws/src folder on the PI
+  Git clone this repo to the catkin_ws/src folder on the PI and you Laptop/PC.
   <b>Note: do this on both your PC/Laptop and the Raspberry PI.</b>, you need copies of the files on both computers.
   
   ```
