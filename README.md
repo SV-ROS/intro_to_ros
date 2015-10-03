@@ -53,6 +53,7 @@ bv80bot
   Packages for mapping an navigation can be run either on the robot or the PC/Laptop, the following gives the launch     commands for each configuration:
   
   Mapping Mode:
+  
     Launch the ros packages for mapping on the robot:
     
     on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_map.launch
