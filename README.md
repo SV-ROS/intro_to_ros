@@ -77,6 +77,7 @@ rosrun map_server map_saver
 ```
 The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml, map.pgm
 
+
   Navigation Mode:
     Launch the ros packages for mapping on the robot (if you saved your map to the PI):
     
