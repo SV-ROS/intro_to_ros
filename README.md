@@ -85,14 +85,14 @@ The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml,
   
     Launch the ros packages for mapping on the robot (if you saved your map to the PI):
     
-    on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_map.launch
+    on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_nav.launch
     on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_gui_only.launch
     
     
     Launch the ros packages for mapping on the PC/Laptop (if you saved your map to the PC/Laptop):
     
     on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_only.launch
-    on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_map_gui.launch
+    on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_nav_gui.launch
     
   You should now be able to set the robots pose in rviz and set nav goals for the robot to goto with the 2d nav goal button in rviz.
     
