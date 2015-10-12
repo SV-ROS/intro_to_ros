@@ -13,8 +13,8 @@ global_costmap:
  
  
   inflation_layer:
-    inflation_radius: 0.4
-    cost_scaling_factor: 35.0
+    inflation_radius: 0.2
+    cost_scaling_factor: 50.0
 
   global_frame: /map
   robot_base_frame: /base_footprint

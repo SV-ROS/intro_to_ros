@@ -14,8 +14,8 @@ local_costmap:
   footprint_padding: 0.01
   
   inflation_layer:
-    inflation_radius: 0.35
-    cost_scaling_factor: 80.0
+    inflation_radius: 0.25
+    cost_scaling_factor: 30.0
 
   global_frame: /odom 
   robot_base_frame: /base_footprint

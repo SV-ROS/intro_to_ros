@@ -1,42 +1,42 @@
-controller_frequency: 1.0
-planner_frequency: 1.0
+controller_frequency: 1.5
+planner_frequency: 5.0
 conservative_reset_dist: 6.0
-oscillation_timeout: 1.2
-oscillation_distance: 0.5
+oscillation_timeout: 2.0
+oscillation_distance: 0.25
 
 TrajectoryPlannerROS:
 
-  acc_lim_x: 0.2
+  acc_lim_x: 0.15
   acc_lim_y: 0.0
-  acc_lim_theta: 2.4
+  acc_lim_theta: 0.2
 
-  max_vel_x: 0.10
-  min_vel_x: 0.0075
-  max_vel_theta: 0.2
-  min_vel_theta: -0.2
-  min_in_place_rotational_vel: 0.15
+  max_vel_x: 0.175
+  min_vel_x: 0.1
+  max_vel_theta: 1.0
+  min_vel_theta: -1.0
+  min_in_place_rotational_vel: 0.2
 
-  sim_time: 0.8
+  sim_time: 5.0
 
  
   yaw_goal_tolerance: 0.35
   xy_goal_tolerance: 0.2
 
-  sim_granularity:  0.05
+  sim_granularity:  0.025
   angular_sim_granularity: 0.025
   
-  pdist_scale: 3.35
-  gdist_scale: 3.8
-  occdist_scale: 5.0
+  pdist_scale: 0.1
+  gdist_scale: 3.1
+  occdist_scale: 0.02
   
-  vx_samples: 9
-  vtheta_samples: 12
+  vx_samples: 12
+  vtheta_samples: 24
 
-  heading_lookahead: 0.15
+  heading_lookahead: 0.225
 
   holonomic_robot: false
 
-  escape_vel: -0.04
+  escape_vel: -0.16
   dwa: false
 
 
