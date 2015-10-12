@@ -1,6 +1,6 @@
 local_costmap:
   transform_tolerance: 2.0
-  update_frequency: 3.0
+  update_frequency: 2.0
   publish_frequency: 2.0
   static_map: false
 
@@ -14,8 +14,8 @@ local_costmap:
   footprint_padding: 0.01
   
   inflation_layer:
-    inflation_radius: 0.25
-    cost_scaling_factor: 30.0
+    inflation_radius: 0.26
+    cost_scaling_factor: 25.0
 
   global_frame: /odom 
   robot_base_frame: /base_footprint
