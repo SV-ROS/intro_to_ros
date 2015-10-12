@@ -45,10 +45,12 @@ from tf.broadcaster import TransformBroadcaster
 from neato_driver.neato_driver import Botvac
 
 class NeatoNode:
-
+	
     def __init__(self):
         """ Start up connection to the Neato Robot. """
         rospy.init_node('neato')
+
+        self.CMD_RATE = 10
 
         self.port = rospy.get_param('~port', "/dev/ttyUSB0")
         rospy.loginfo("Using port: %s" % self.port)
@@ -90,6 +92,8 @@ class NeatoNode:
         self.robot.setLED("Green")
         # main loop of driver
         r = rospy.Rate(20)
+        cmd_rate= self.CMD_RATE
+
         while not rospy.is_shutdown():
             # notify if low batt
             #if self.robot.getCharger() < 10:
@@ -97,9 +101,12 @@ class NeatoNode:
             # get motor encoder values
             left, right = self.robot.getMotors()
 
-            # send updated movement commands
-            #if self.cmd_vel != self.old_vel or self.cmd_vel == [0,0]:
-            self.robot.setMotors(self.cmd_vel[0], self.cmd_vel[1], max(abs(self.cmd_vel[0]), abs(self.cmd_vel[1])))
+            cmd_rate = cmd_rate-1
+            if cmd_rate ==0:
+		    # send updated movement commands
+		    #if self.cmd_vel != self.old_vel or self.cmd_vel == [0,0]:
+		    self.robot.setMotors(self.cmd_vel[0], self.cmd_vel[1], max(abs(self.cmd_vel[0]), abs(self.cmd_vel[1])))
+		    cmd_rate = self.CMD_RATE
 
             self.old_vel = self.cmd_vel
 
