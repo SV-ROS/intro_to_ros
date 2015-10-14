@@ -109,13 +109,13 @@ The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml,
   - xbox360 joystick
   - logitech joypad
   - keyboard
-  
+
   There is an argument at the top of the bv80bot_base.launch file as shown below:
 
   ~/catkin_ws/src/intro_to_ros/bv80bot/bv80bot_node/launch/include/bv80bot_base.launch
   ```
   <!-- Change this to use a different joystick controller -->
-  <!-- Set the default value for the 'teleop_controler' arg below to one of the folowing values to select the    controler you are using to teleop the robot:
+  <!-- Set the default value for the 'teleop_controler' arg below to one of the folowing values to select the controler you are using to teleop the robot:
         ps3
         xbox360
         keyboard
@@ -124,7 +124,7 @@ The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml,
   <arg name="teleop_controler"   default="xbox360" />
   ```
   
-  Change the value of the default argument to one of the indicated choices to change your controller settings/configuration.
+  Change the value of the default argument shown above to one of the indicated choices to change your controler settings/configuration.
   
     
   
