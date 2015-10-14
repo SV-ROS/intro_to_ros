@@ -1,18 +1,24 @@
 <launch>
 
+  <!-- Change this to use a different joystick controller -->
+  <!-- Set the default value for the 'teleop_controler' arg below to one of the folowing values to select the controler you are using to teleop the robot:
+	ps3
+        xbox360
+        keyboard
+        logitech
+  -->
+  <arg name="teleop_controler"   default="ps3" />
+
+
   <arg name="input_cmd_vel_topic"    default="/raw_cmd_vel" />
   <arg name="feedback_cmd_vel_topic" default="robot_cmd_vel" />
   <arg name="output_cmd_vel_topic"   default="smoothed_cmd_vel" />
+  
 
-
-  <!-- Change this to use a different joystick controller -->
-  <include file="$(find bv80bot_node)/launch/include/xbox360_teleop.launch" />
+  <!-- launch the teleop controler -->
+  <include file="$(find bv80bot_node)/launch/include/$(arg teleop_controler)_teleop.launch" />
 
   
-  <!--
-    Push the left frontal button labeled as 'LB' to activate cmd_vel publishing.
-    Move the left stick around to control the velocity.
-   -->
   <!--  smooths inputs from cmd_vel_mux/input/teleop_raw to cmd_vel_mux/input/teleop -->
   <include file="$(find bv80bot_node)/launch/include/velocity_smoother.launch">
     <arg name="input_cmd_vel_topic"    value="$(arg input_cmd_vel_topic)" />
@@ -22,7 +28,6 @@
  
   
   <!-- velocity commands multiplexer -->
-  <!-- node pkg="nodelet" type="nodelet" name="mobile_base_nodelet_manager" args="manager"/ -->
   <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
     <param name="yaml_cfg_file" value="$(find bv80bot_node)/param/mux.yaml"/>
     <remap from="cmd_vel_mux/output" to="/robot_cmd_vel"/>
@@ -30,16 +35,21 @@
     <remap from="cmd_vel_mux/input/teleop" to="$(arg output_cmd_vel_topic)" />
   </node>
 
+  
+  <!-- create transform for laser (should be moved to the URDF) -->
   <node name="laser_to_base" pkg="tf2_ros" type="static_transform_publisher"  args="-0.090 0.0 0.037 0 0 0 1 base_link base_laser_link" />
 
+  <!-- launch the main base driver node -->
   <node name="neato" pkg="neato_node" type="neato.py" output="screen">
     <param name="port" value="/dev/ttyACM0" />
     <remap from="cmd_vel" to="robot_cmd_vel" />
     <remap from="/base_scan" to="/scan" />
   </node>
  
+  <!-- publish teh URDF -->
   <param name="robot_description" command="$(find xacro)/xacro.py $(find neato_node)/urdf/neato.urdf.xacro" />
   
+  <!-- publish the robot state transforms -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" >
       <param name="use_gui" value="False"/>
   </node>
