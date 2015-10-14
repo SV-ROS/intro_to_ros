@@ -7,7 +7,7 @@
         keyboard
         logitech
   -->
-  <arg name="teleop_controler"   default="ps3" />
+  <arg name="teleop_controler"   default="xbox360" />
 
 
   <arg name="input_cmd_vel_topic"    default="/raw_cmd_vel" />
