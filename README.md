@@ -47,6 +47,11 @@ bv80bot
   catkin_make
   ```
   
+  Also make sure you have chrony installed on both the PC/Laptop and the PI:
+  
+  ```
+  sudo apt-get install chrony
+  ```
  
   There are a number of different way to launch the robot depending on where you want to run the packages.
   
@@ -68,12 +73,12 @@ bv80bot
     on the Raspberry PI -- roslaunch bv80bot_node bv80bot_base_only.launch
     on the PC/Laptop    -- roslaunch bv80bot_node bv80bot_map_gui.launch
     
-Drive around with the joystick until you have a good enough map.
+Drive around with the joystick/keyboard until you have a good enough map (see below for telop configuration).
 
 Once you have crated a map you like you must save it before you stop running the nodes launched above.
 You can save the map to the PI or the Laptop/PC, you should save it to the computer you intend to run the nav nodes on later.
 
-So on the appropreate computer, (PC/Laptop or the PI) save the map as follows:
+So on the apropreate computer, (PC/Laptop or the PI) save the map as follows:
 ```
 roscd neato_2dnav/maps
 rosrun map_server map_saver
@@ -97,12 +102,29 @@ The map will be saved as two files in the .../neato_2dnav/maps folder, map.yaml,
   You should now be able to set the robots pose in rviz and set nav goals for the robot to goto with the 2d nav goal button in rviz.
     
     
-  The launch files mentioned above will launch the xbox360 joystick teleop package from the turtlebot packages.
-  If you use a different joystick update the file:
+  <b>Teleop Configuration:</b>
   
-  ~/catkin_ws/src/intro_to_ros/bv80bot/bv80bot_node/launch/include/bv80bot_base.launch
+  The launch files mentioned can be configured to use 1 of 4 teleop controllers:
+  - ps3 joystick
+  - xbox360 joystick
+  - logitech joypad
+  - keyboard
   
-  to change your controller settings/configuration.
+  There is an argument at the top of the bv80bot_base.launch file as shown below,
+
+  '~/catkin_ws/src/intro_to_ros/bv80bot/bv80bot_node/launch/include/bv80bot_base.launch'
+  '''
+  <!-- Change this to use a different joystick controller -->
+  <!-- Set the default value for the 'teleop_controler' arg below to one of the folowing values to select the    controler you are using to teleop the robot:
+        ps3
+        xbox360
+        keyboard
+        logitech
+  -->
+  <arg name="teleop_controler"   default="xbox360" />
+  '''
+  
+  Change the value of the default argument to one of the indicated choices to change your controller settings/configuration.
   
     
   
