@@ -1,4 +1,4 @@
-controller_frequency: 1.5
+controller_frequency: 1.0
 planner_frequency: 5.0
 conservative_reset_dist: 6.0
 oscillation_timeout: 2.0
@@ -32,11 +32,11 @@ TrajectoryPlannerROS:
   vx_samples: 12
   vtheta_samples: 24
 
-  heading_lookahead: 0.225
+  heading_lookahead: 0.3
 
   holonomic_robot: false
 
-  escape_vel: -0.16
+  escape_vel: -0.1
   dwa: false
 
 
