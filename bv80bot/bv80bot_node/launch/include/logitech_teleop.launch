@@ -8,7 +8,7 @@
   <node pkg="turtlebot_teleop" type="turtlebot_teleop_joy" name="teleop_joystick">
     <param name="scale_angular" value="1.5"/>
     <param name="scale_linear" value="0.5"/>
-    <remap from="turtlebot_teleop_joystick/cmd_vel" to="/raw_cmd_vel"/>
+    <remap from="teleop_joystick/cmd_vel" to="/raw_cmd_vel"/>
   </node>
 
   <node pkg="joy" type="joy_node" name="joystick"/>
