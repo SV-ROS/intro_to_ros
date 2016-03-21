@@ -106,7 +106,8 @@ class NeatoNode:
 		    # send updated movement commands
 		    #if self.cmd_vel != self.old_vel or self.cmd_vel == [0,0]:
                     # max(abs(self.cmd_vel[0]),abs(self.cmd_vel[1])))
-		    self.robot.setMotors(self.cmd_vel[0], self.cmd_vel[1], (abs(self.cmd_vel[0])+abs(self.cmd_vel[1]))/2)
+		    #self.robot.setMotors(self.cmd_vel[0], self.cmd_vel[1], (abs(self.cmd_vel[0])+abs(self.cmd_vel[1]))/2)
+		    self.robot.setMotors(self.cmd_vel[0], self.cmd_vel[1], max(abs(self.cmd_vel[0]),abs(self.cmd_vel[1])))
 		    cmd_rate = self.CMD_RATE
 
             self.old_vel = self.cmd_vel
