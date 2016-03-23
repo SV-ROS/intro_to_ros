@@ -1,49 +1,78 @@
-controller_frequency: 1.0
-planner_frequency: 5.0
+base_global_planner: navfn/NavfnROS
+base_local_planner: dwa_local_planner/DWAPlannerROS
+
+
+planner_frequency: 2.0
+controller_frequency: 1.5
+
+planner_patience: 5.0
+controller_patience: 5.0
+
 conservative_reset_dist: 6.0
-oscillation_timeout: 2.0
+
+recovery_behavior_enabled: true
+clearing_rotation_allowed: true
+
+shutdown_cost_maps: true
+
+oscillation_timeout: 9.0
 oscillation_distance: 0.25
 
-TrajectoryPlannerROS:
 
-  acc_lim_x: 0.31
+
+DWAPlannerROS:
+
+  max_trans_vel: 0.15
+  min_trans_vel: 0.015
+
+  max_vel_x: 0.15
+  min_vel_x: -0.07
+
+  max_vel_y: 0.01
+  min_vel_y: -0.01
+
+  max_rot_vel: 0.5
+  min_rot_vel: 0.002
+
+  acc_lim_x: 0.1
   acc_lim_y: 0.0
-  acc_lim_theta: 0.07
+  acc_lim_theta: 0.5
+  acc_lim_trans: 0.1
 
-  max_vel_x: 0.175
-  min_vel_x: 0.07
-  max_vel_theta: 0.3
-  min_vel_theta: -0.3
-  min_in_place_rotational_vel: 0.3
+  xy_goal_tolerance: 0.075 
+  yaw_goal_tolerance: 0.25
+  latch_xy_goal_tolerance: true
+  prune_plan: true
 
-  sim_time: 5.0
+  trans_stopped_vel: 0.1
+  rot_stopped_vel: 0.1
 
- 
-  yaw_goal_tolerance: 0.35
-  xy_goal_tolerance: 0.075
-
+  sim_time: 3.0
   sim_granularity:  0.025
-  angular_sim_granularity: 0.025
+
+  angular_sim_granularity: 0.015
   
-  pdist_scale: 0.003
-  gdist_scale: 1.2
-  occdist_scale: 0.005
+  path_distance_bias: 50.0
+  goal_distance_bias: 30.0
+  occdist_scale: 0.9
+
+  stop_time_buffer: 1.0
+
+  oscillation_reset_dist: 0.05
+  oscillation_reset_angle: 0.3
+
+  forward_point_distance: 0.433
+
+  scaling_speed: 0.5
+  max_scaling_factor: 1.17 
   
-  vx_samples: 12
-  vtheta_samples: 24
+  vx_samples: 20
+  vy_samples: 10
+  vth_samples: 20
 
-  heading_lookahead: 0.3
-
-  holonomic_robot: false
-
-  escape_vel: -0.1
-  dwa: false
+  use_dwa: true
 
 
-  heading_scoring: true
-  heading_scoring_timestep: 0.5
-  
-  meter_scoring: true
   
  
 

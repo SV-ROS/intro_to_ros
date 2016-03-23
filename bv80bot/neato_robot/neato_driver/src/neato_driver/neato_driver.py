@@ -376,12 +376,16 @@ class Botvac():
 
         return True
 
+    # thread to read data from the serial port
+    # buffers each line in a list (self.comsData)
+    # when an end of response (^Z) is read, adds the complete list of response lines to self.responseData and resets the comsData list for the next command response.
     def read(self):
         self.reading = True
         line=""
+
         while(self.reading and not rospy.is_shutdown()):
             try:
-               val = self.port.read(1)
+               val = self.port.read(1) # read from serial 1 char at a time so we can parse each character
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato Serial: " + str(ex))
                 val=[]
@@ -395,53 +399,64 @@ class Botvac():
                     print ("'%s'"%str(val))
                 '''
 
-                if ord(val[0]) ==13:
+                if ord(val[0]) ==13: # ignore the CRs
                     pass
 
-                elif ord(val[0]) == 26: # ^Z
+                elif ord(val[0]) == 26: # ^Z (end of response)
                     if len(line) > 0:
-                        self.comsData.append(line)
+                        self.comsData.append(line) # add last line to response set if it is not empty
                         #print("Got Last Line: %s" % line)
-                        line=""
+                        line="" # clear the line buffer for the next line
 
                     #print ("Got Last")
-                    with self.readLock:
+                    with self.readLock: # got the end of the command response so add the full set of response data as a new item in self.responseData
                         self.responseData.append(list(self.comsData))
 
-                    self.comsData = []
+                    self.comsData = [] # clear the bucket for the lines of the next command response
 
-                elif ord(val[0]) == 10: # NL
+                elif ord(val[0]) == 10: # NL, terminate the current line and add it to the response data list (comsData) (if it is not a blank line)
                     if len(line) > 0:
                         self.comsData.append(line)
                         #print("Got Line: %s" % line)
-                        line = ""
+                        line = "" # clear the bufer for the next line
                 else:
-                    line=line+val
+                    line=line+val # add the character to the current line buffer
 
+    # read response data for a command
+    # returns tuple (line,last)
+    # line is one complete line of text from the command response
+    # last = true if the line was the last line of the response data (indicated by a ^Z from the neato)
+    # returns the next line of data from the buffer.
+    # if the line was the last line last = true
+    # if no data is avaialable and we timeout returns line=""
     def getResponse(self,timeout=1):
+
+        # if we don't have any data in currentResponse, wait for more data to come in (or timeout) 
         while (len(self.currentResponse)==0) and (not rospy.is_shutdown()) and timeout > 0:
-            with self.readLock:
+
+            with self.readLock: # pop a new response data list out of self.responseData (should contain all data lines returned for the last sent command)
                if len(self.responseData) > 0:
                   self.currentResponse = self.responseData.pop(0)
                   #print "New Response Set"
                else:
-                  self.currentResponse=[]
+                  self.currentResponse=[] # no data to get
 
-            if len(self.currentResponse)==0:
+            if len(self.currentResponse)==0: # nothing in the buffer so wait (or until timeout)
                time.sleep(0.010)
                timeout=timeout-0.010
 
-
+        # default to nothing to return
         line = ""
         last=False
 
+        # if currentResponse has data pop the next line 
         if not len(self.currentResponse)==0:
             line = self.currentResponse.pop(0)
             #print line,len(self.currentResponse)
             if  len(self.currentResponse)==0:
-                last=True
+                last=True  # if this was the last line in the response set the last flag
         else:
-            print "Time Out"
+            print "Time Out" # no data so must have timedout
 
         #rospy.loginfo("Got Response: %s, Last: %d" %(line,last))
         return (line,last)
