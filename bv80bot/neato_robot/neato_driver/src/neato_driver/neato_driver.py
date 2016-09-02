@@ -253,7 +253,10 @@ class Botvac():
         else:
             self.stop_state = False
 
-        self.sendCmd("setmotor "+str(int(l))+" "+str(int(r))+" "+str(int(s)))
+        self.sendCmd("setmotor" + 
+                     " lwheeldist " + str(int(l)) + 
+                     " rwheeldist " + str(int(r)) + 
+                     " speed " + str(int(s)))
 
     def getMotors(self):
         """ Update values for motors in the self.state dictionary.
@@ -272,7 +275,7 @@ class Botvac():
                 vals,last = self.getResponse()
                 #print vals,last
                 values = vals.split(",")
-                self.state[values[0]] = int(values[1])
+                self.state[values[0]] = float(values[1])
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato motors: " + str(ex))
 
