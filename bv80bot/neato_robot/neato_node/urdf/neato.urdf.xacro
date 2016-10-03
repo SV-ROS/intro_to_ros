@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="neato">
+    <link name="base_footprint"/>
+    <link name="base_link">
+      <visual>   
+        <origin xyz="0.150 -0.165 -0.040" rpy="0 0 1.57" />
+        <geometry>
+          <mesh filename="package://neato_node/meshes/neato.dae" scale="0.025 0.025 0.025"/>
+        </geometry>
+      </visual>
+
+<!--  stl exported from sketchup broken
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://neato_node/meshes/neato.stl"/>
+        </geometry>
+      </collision>
+ -->
+      
+    </link>
+    <joint name="base_base_footprint" type="fixed">    
+       <origin xyz="0 0 0.040" rpy="0 0 0" />
+       <parent link="base_footprint" />
+       <child link="base_link" />
+
+   </joint>
+</robot>
