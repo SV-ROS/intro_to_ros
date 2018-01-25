@@ -3,11 +3,13 @@ Repository of packages and info for the SV-ROS Intro To ROS training series
 
 This repo will contain the software and documents for the SV-ROS 2015 Intro to Ros training series.
 
+As of January, 2018, many updates have occurred, so we will be updating the documentation.
+
 The series involes a set of talks presenting a general introduction to ROS and building ROS Robots.
 
 Reference Robot designs are provided as a guide to getting started.
 
-The first of these is a robot built on the Neato BV80 base and using a Raspberry PI II SBC.
+The first of these is a robot built on the Neato BV80 base and using a Raspberry PI III. The PI III has built in WiFi and Blue Tooth, but because of this the default names of ttyUSB0  needs to be changed to ttyACM0 in order to connect to the robot.
 
 The ROS packages and drivers for this robot can be found in the bv80bot folder(s).
 
@@ -17,16 +19,17 @@ The driver is based on a modified Neato Driver first created by Michael Ferguson
 bv80bot
 -------
 
-  The robot is built from a Raspberry PI II SBC and a Neato BV80 robot vacume base.
+  The robot is built from a Raspberry PI III SBC and a Neato BV80 robot vacume base.
   
   Follow the instructions from Ubiquity Robotics for building a ROS image on the PI.
-  https://github.com/UbiquityRobotics/ubiquity-misc
+  https://downloads.ubiquityrobotics.com   This will allow you to place a ROS image on a 16g SD card which can 
+  then directly boot the PI with Lubuntu 16.04, ROS Kinetic. Since this image is for another robot, 
+  additional modifications to the PI's OS will be required to make a working robot.
   
-  <b>Ensure you install the robot_state_publisher and robot_model packages from source else they will crash.</b>
   
-  Also install ALL of the following:
+  Also install ALL of the following(Note some of the turtlebot packages may not be available in kinetic, this needs testing):
   ```
-  sudo apt-get install ros-indigo-xacro ros-indigo-turtlebot-description ros-indigo-turtlebot-navigation ros-indigo-turtlebot-teleop ros-indigo-yocs-cmd-vel-mux ros-indigo-yocs-velocity-smoother
+  sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
 ```
   
   Git clone this repo to the catkin_ws/src folder on the PI and you Laptop/PC.
@@ -39,6 +42,13 @@ bv80bot
   cd ~/catkin_ws/src
   git clone https://github.com/SV-ROS/intro_to_ros.git
   ```
+  Optional, but highly recommended:
+  
+  ```
+   git clone /https://github.com/pirobot/rbx1
+   git clone https://github.com/vanadiumlabs/arbotix_ros
+  ```
+  
   do a catkin_make on the workspace (on both computers)
   
   ```
