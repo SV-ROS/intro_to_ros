@@ -196,6 +196,8 @@ class Botvac():
 
         """ Read values of a scan -- call requestScan first! """
         ranges = list()
+	intensities = list()
+
         angle = 0
 
         if not self.readTo("AngleInDegrees"):
@@ -218,24 +220,29 @@ class Botvac():
                 try:
                     a = int(vals[0])
                     r = int(vals[1])
+		    i = int(vals[2])
                     e = int(vals[3])
 
                     while (angle < a):
                         ranges.append(0)
+			intensities.append(0)
                         angle +=1
 
                     if(e==0):
                         ranges.append(r/1000.0)
+			intensities.append(i/1000.0)
                     else:
                         ranges.append(0)
+			intensities.append(0)
                 except:
                     ranges.append(0)
+		    intensities.append(0)
                 angle += 1
 
         if len(ranges) <> 360:
 	    rospy.loginfo( "Missing laser scans: got %d points" %len(ranges))
 
-        return ranges
+        return ranges, intensities
 
     def setMotors(self, l, r, s):
         """ Set motors, distance left & right + speed """
