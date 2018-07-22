@@ -230,7 +230,7 @@ class Botvac():
 
                     if(e==0):
                         ranges.append(r/1000.0)
-			intensities.append(i/1000.0)
+			intensities.append(i)
                     else:
                         ranges.append(0)
 			intensities.append(0)
