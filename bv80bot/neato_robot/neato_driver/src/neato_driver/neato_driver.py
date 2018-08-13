@@ -163,7 +163,7 @@ class Botvac():
 
         self.flush()
 
-	rospy.loginfo("Init Done")
+        rospy.loginfo("Init Done")
 
 
     def exit(self):
@@ -196,7 +196,7 @@ class Botvac():
 
         """ Read values of a scan -- call requestScan first! """
         ranges = list()
-	intensities = list()
+        intensities = list()
 
         angle = 0
 
@@ -220,27 +220,28 @@ class Botvac():
                 try:
                     a = int(vals[0])
                     r = int(vals[1])
-		    i = int(vals[2])
+                    i = int(vals[2])
                     e = int(vals[3])
 
                     while (angle < a):
                         ranges.append(0)
-			intensities.append(0)
+                        intensities.append(0)
                         angle +=1
 
                     if(e==0):
                         ranges.append(r/1000.0)
-			intensities.append(i)
+                        intensities.append(i)
                     else:
                         ranges.append(0)
-			intensities.append(0)
+                        intensities.append(0)
                 except:
                     ranges.append(0)
-		    intensities.append(0)
+                    intensities.append(0)
+                    
                 angle += 1
 
-        if len(ranges) <> 360:
-	    rospy.loginfo( "Missing laser scans: got %d points" %len(ranges))
+        if len(ranges) != 360:
+            rospy.loginfo( "Missing laser scans: got %d points" %len(ranges))
 
         return ranges, intensities
 
@@ -329,7 +330,7 @@ class Botvac():
         return [self.state["LSIDEBIT"], self.state["RSIDEBIT"], self.state["LFRONTBIT"], self.state["RFRONTBIT"]]
 
     def getButtons(self):
-	return [0,0,0,0,0]
+        return [0,0,0,0,0]
 
     def getCharger(self):
         """ Update values for charger/battery related info in self.state dictionary. """
@@ -361,7 +362,7 @@ class Botvac():
         self.sendCmd("setled %s" % cmd)
     
     def setLED(self,cmd):
-	self.setLed(cmd)
+        self.setLed(cmd)
 
     def sendCmd(self,cmd):
         #rospy.loginfo("Sent command: %s"%cmd)
@@ -466,16 +467,16 @@ class Botvac():
             if  len(self.currentResponse)==0:
                 last=True  # if this was the last line in the response set the last flag
         else:
-            print "Time Out" # no data so must have timedout
+            print("Time Out") # no data so must have timedout
 
         #rospy.loginfo("Got Response: %s, Last: %d" %(line,last))
         return (line,last)
 
     def flush(self):
-	while(1):
+        while(1):
           l,last= self.getResponse(1)
-	  if l=="":
-		return	
+          if l=="":
+            return    
 
 #SetLED - Sets the specified LED to on,off,blink, or dim. (TestMode Only)
 #BacklightOn - LCD Backlight On  (mutually exclusive of BacklightOff)
