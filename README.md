@@ -45,7 +45,7 @@ bv80bot
   Optional, but highly recommended:
   
   ```
-   git clone /https://github.com/pirobot/rbx1
+   git clone https://github.com/pirobot/rbx1
    git clone https://github.com/vanadiumlabs/arbotix_ros
   ```
   
@@ -88,7 +88,7 @@ Drive around with the joystick/keyboard until you have a good enough map (see be
 Once you have crated a map you like you must save it before you stop running the nodes launched above.
 You can save the map to the PI or the Laptop/PC, you should save it to the computer you intend to run the nav nodes on later.
 
-So on the apropreate computer, (PC/Laptop or the PI) save the map as follows:
+So on the appropriate computer, (PC/Laptop or the PI) save the map as follows:
 ```
 roscd neato_2dnav/maps
 rosrun map_server map_saver
