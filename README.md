@@ -21,7 +21,7 @@ The following link provides the basic command set for the BV80 over the USB seri
 
 Also type HELP in a terminal connected to the port to get the built in command help info.
 
-USB Seria API doc - https://tinyurl.com/Neato-Programmers-Manual
+USB Serial API doc - https://tinyurl.com/Neato-Programmers-Manual
 
 Other usefull info on the Lidar
 
