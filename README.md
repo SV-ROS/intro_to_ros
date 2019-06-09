@@ -21,7 +21,11 @@ The following link provides the basic command set for the BV80 over the USB seri
 
 Also type HELP in a terminal connected to the port to get the built in command help info.
 
-API doc - https://tinyurl.com/Neato-Programmers-Manual
+USB Seria API doc - https://tinyurl.com/Neato-Programmers-Manual
+
+Other usefull info on the Lidar
+
+https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
 
 --
 bv80bot
