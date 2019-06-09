@@ -15,6 +15,14 @@ The ROS packages and drivers for this robot can be found in the bv80bot folder(s
 
 The driver is based on a modified Neato Driver first created by Michael Ferguson.
 
+
+## Background info
+The following link provides the basic command set for the BV80 over the USB serial port.
+
+Also type HELP in a terminal connected to the port to get the built in command help info.
+
+API doc - https://tinyurl.com/Neato-Programmers-Manual
+
 --
 bv80bot
 -------
