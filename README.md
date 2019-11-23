@@ -91,15 +91,9 @@ Create a new ROS catkin workspace under your home directory, then git clone the 
    git clone https://github.com/pirobot/rbx1
    git clone https://github.com/vanadiumlabs/arbotix_ros
   ```
+
   
-  Now install the extra dependancies needed to run the ROS nodes, this can be done with the rosdep command
-  
-  ```
-  cd ~/catkin_ws
-  rosdep update --from-src src
-  
-  
-   Also install ALL of the following(Note some of the turtlebot packages may not be available in kinetic, this needs testing):
+Also install ALL of the following(Note some of the turtlebot packages may not be available in kinetic, this needs testing):
   ```
   sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
 ```
