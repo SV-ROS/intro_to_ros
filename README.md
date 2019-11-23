@@ -118,12 +118,11 @@ Also install ALL of the following:
    ```
 
   comment out this line and replace it as shown:
-  
-  
-    ```
-      #source /opt/ros/kinetic/setup.bash
-      source ~/catkin_ws/devel/setup.bash
-    ```
+ 
+```
+  # source /opt/ros/kinetic/setup.bash
+  source ~/catkin_ws/devel/setup.bash
+```
   Save and close the editor
 
   now close and reopen a terminal or just source ~/.bashrc
