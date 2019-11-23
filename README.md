@@ -112,6 +112,7 @@ Also install ALL of the following:
   ```
   sudo apt-get install chrony
   ```
+ ## Running the Robot
  
   There are a number of different way to launch the robot depending on where you want to run the packages.
   
