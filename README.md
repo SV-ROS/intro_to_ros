@@ -15,53 +15,123 @@ The ROS packages and drivers for this robot can be found in the bv80bot folder(s
 
 The driver is based on a modified Neato Driver first created by Michael Ferguson.
 
+
+## Background info
+The following link provides the basic command set for the BV80 over the USB serial port.
+
+Also type HELP in a terminal connected to the port to get the built in command help info.
+
+USB Serial API doc - https://tinyurl.com/Neato-Programmers-Manual
+
+Other usefull info on the Lidar
+
+https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
+
 --
-bv80bot
+## Setingup the Robot/Rasperry PI
 -------
 
-  The robot is built from a Raspberry PI III SBC and a Neato BV80 robot vacume base.
+### Initial SD Card Image
+
+  The robot is built from a Raspberry PI III SBC and a Neato BV80 or later robot vacume base.
+  
+  To start use a blank 16Gb or 32Gb SDcard and install the Ubuntu Image from Ubiquity robotics:
   
   Follow the instructions from Ubiquity Robotics for building a ROS image on the PI.
-  https://downloads.ubiquityrobotics.com   This will allow you to place a ROS image on a 16g SD card which can 
-  then directly boot the PI with Lubuntu 16.04, ROS Kinetic. Since this image is for another robot, 
-  additional modifications to the PI's OS will be required to make a working robot.
+  https://downloads.ubiquityrobotics.com   This will allow you to place a ROS image on a 16Gb or 32Gb SD card which can 
+  then directly boot the PI with ubuntu 16.04 and ROS Kinetic pre installed. Since this image is for another robot, 
+  additional modifications to the PI's OS will be required to make a working robot as detailed below.
   
-  
-  Also install ALL of the following(Note some of the turtlebot packages may not be available in kinetic, this needs testing):
-  ```
-  sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
+ ### Setup the Intro to ROS Packages 
+ 
+After creating the SDCard insert it into the Rasperry PI and boot it - at this point its best if you have an HDMI monitor, mouse and keyboard attached or you can work via an SSH terminal sesion.
+ 
+Initial login using:
+
+     user -  ubuntu      
+     password-  ubuntu
+     
+First disable the pre loaded ubiquity robotics ROS stacks that are auto started with the following command:
+
+```sudo systemctl disable magni-base```
+
+If you don't always want to login as the ubuntu user you may want to create a new user - just follow standard Ubuntu admin steps to do this.
+
+Login as your preffered user.
+
+Use the normal Ubuntu networking steps to connect to a suitable WiFi network.
+
+Now update the instaled image:
+
 ```
-  
-  Git clone this repo to the catkin_ws/src folder on the PI and you Laptop/PC.
+   sudo apt-get update
+   sudo apt-get upgrade
+```
+
+Make sure ROS files are upto date:
+
+  ```
+  rosdep update
+  ```
+
+Create a new ROS catkin workspace under your home directory, then git clone the intro_to_ros repo to the catkin_ws/src folder.
   
   <b>Note: do this on both your PC/Laptop and the Raspberry PI.</b>, 
   
   you need copies of the files on both computers.
   
   ```
+  mkdir -p ~/catkin_ws/src
   cd ~/catkin_ws/src
   git clone https://github.com/SV-ROS/intro_to_ros.git
   ```
   Optional, but highly recommended:
   
   ```
-   git clone /https://github.com/pirobot/rbx1
+   git clone https://github.com/pirobot/rbx1
    git clone https://github.com/vanadiumlabs/arbotix_ros
   ```
+
+  
+Also install ALL of the following:
+  ```
+  sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
+```
+
   
   do a catkin_make on the workspace (on both computers)
   
   ```
-  roscd
-  cd ..
+  cd ~/catkin_ws
   catkin_make
   ```
   
-  Also make sure you have chrony installed on both the PC/Laptop and the PI:
+  Now you can update the .bashrc file in your home directory.
+
+  open ~/.bashrc in vi or whatever text editor you prefer.
+
+  Near the end find the line:
   
-  ```
-  sudo apt-get install chrony
-  ```
+   ```
+     source /opt/ros/kinetic/setup.bash
+   ```
+
+  comment out this line and replace it as shown:
+ 
+```
+  # source /opt/ros/kinetic/setup.bash
+  source ~/catkin_ws/devel/setup.bash
+```
+  Save and close the editor
+
+  now close and reopen a terminal or just source ~/.bashrc
+
+  You should now be able to launch the ROS code as discussed below.
+
+
+
+
+ ## Running the Robot
  
   There are a number of different way to launch the robot depending on where you want to run the packages.
   
@@ -88,7 +158,7 @@ Drive around with the joystick/keyboard until you have a good enough map (see be
 Once you have crated a map you like you must save it before you stop running the nodes launched above.
 You can save the map to the PI or the Laptop/PC, you should save it to the computer you intend to run the nav nodes on later.
 
-So on the apropreate computer, (PC/Laptop or the PI) save the map as follows:
+So on the appropriate computer, (PC/Laptop or the PI) save the map as follows:
 ```
 roscd neato_2dnav/maps
 rosrun map_server map_saver
