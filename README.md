@@ -107,16 +107,19 @@ Also install ALL of the following:
   catkin_make
   ```
   
-  Now you can update the .bashrc file in your home directory:
+  Now you can update the .bashrc file in your home directory.
 
-  open ~/.bashrc  in vi or whatever text editor you prefer
+  open ~/.bashrc in vi or whatever text editor you prefer.
 
   Near the end find the line:
+  
    ```
      source /opt/ros/kinetic/setup.bash
    ```
 
   comment out this line and replace it as shown:
+  
+  
     ```
       #source /opt/ros/kinetic/setup.bash
       source ~/catkin_ws/devel/setup.bash
