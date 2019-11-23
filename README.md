@@ -59,7 +59,7 @@ If you don't always want to login as the ubuntu user you may want to create a ne
 
 Login as your preffered user.
 
-Use the noirmal Ubuntu networking steps to connect to a sutable WiFi network.
+Use the normal Ubuntu networking steps to connect to a suitable WiFi network.
 
 Now update the instaled image:
 
