@@ -93,7 +93,7 @@ Create a new ROS catkin workspace under your home directory, then git clone the 
   ```
 
   
-Also install ALL of the following(Note some of the turtlebot packages may not be available in kinetic, this needs testing):
+Also install ALL of the following:
   ```
   sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
 ```
