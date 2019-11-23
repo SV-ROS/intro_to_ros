@@ -102,8 +102,7 @@ Also install ALL of the following:
   do a catkin_make on the workspace (on both computers)
   
   ```
-  roscd
-  cd ..
+  cd ~/catkin_ws
   catkin_make
   ```
   
