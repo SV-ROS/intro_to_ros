@@ -46,17 +46,16 @@ https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
  
 After creating the SDCard insert it into the Rasperry PI and boot it - at this point its best if you have an HDMI monitor, mouse and keyboard attached or you can work via an SSH terminal sesion.
  
-Initial login is as:
+Initial login using:
 
-     user -  ubuntu 
-     
+     user -  ubuntu      
      password-  ubuntu
      
 First disable the pre loaded ubiquity robotics ROS stacks that are auto started with the following command:
 
 ```sudo systemctl disable magni-base```
 
-If you dont always weant to login as the ubuntu user you may want to create a new user - just follow standard Ubuntu admin steps to do this.
+If you don't always want to login as the ubuntu user you may want to create a new user - just follow standard Ubuntu admin steps to do this.
 
 Login as your preffered user.
 
@@ -66,7 +65,6 @@ Now update the instaled image:
 
    ```
    sudo apt-get update
-
    sudo apt-get upgrade
    ```
    
