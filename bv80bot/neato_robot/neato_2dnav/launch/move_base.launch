@@ -1,8 +1,10 @@
 <launch>
   <param name="use_sim_time" value="false"/>
 
+  <arg name="map_name" default="map" />
+
   <!-- Run the map server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/$(arg map_name).yaml"/>
 
   <include file="$(find neato_2dnav)/launch/amcl.launch" />
 

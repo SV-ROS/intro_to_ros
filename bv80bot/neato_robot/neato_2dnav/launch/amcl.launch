@@ -27,8 +27,8 @@
 	  <param name="laser_likelihood_max_dist" value="5.0"/>
 	  <param name="update_min_d" value="0.1"/>
 	  <param name="update_min_a" value="0.1"/>
-	  <param name="odom_frame_id" value="/odom"/>
-	  <param name="base_frame_id" value="/base_footprint"/>
+	  <param name="odom_frame_id" value="odom"/>
+	  <param name="base_frame_id" value="base_footprint"/>
 	  <param name="resample_interval" value="2"/>
 	  <param name="recovery_alpha_slow" value="0.001"/>
 	  <param name="recovery_alpha_fast" value="0.1"/>
