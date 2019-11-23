@@ -1,8 +1,10 @@
 <launch>
 
+  <arg name="map_name" default="map" />
 
-  <include  file="$(find neato_2dnav)/launch/move_base.launch" />
-
+  <include  file="$(find neato_2dnav)/launch/move_base.launch" >
+	<arg name="map_name" value="$(arg map_name)" />
+  </include>
 
 </launch>
 
