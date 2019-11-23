@@ -1,5 +1,9 @@
 <launch>
-  <include file="$(find bv80bot_node)/launch/include/bv80bot_nav.launch" />
+  <arg name="map_name" default="map" />
+
+  <include file="$(find bv80bot_node)/launch/include/bv80bot_nav.launch" >
+	<arg name="map_name" value="$(arg map_name)" />
+  </include>
   <include file="$(find bv80bot_node)/launch/include/bv80bot_gui.launch" />
 </launch>
 

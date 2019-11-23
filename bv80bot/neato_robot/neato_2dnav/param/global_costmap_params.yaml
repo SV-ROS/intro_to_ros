@@ -13,8 +13,8 @@ global_costmap:
   
   static_map: true
 
-  global_frame: /map
-  robot_base_frame: /base_footprint
+  global_frame: map
+  robot_base_frame: base_footprint
 
   inflation_layer:
     inflation_radius: 0.26
