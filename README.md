@@ -28,29 +28,62 @@ Other usefull info on the Lidar
 https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
 
 --
-bv80bot
+## Setingup the Robot/Rasperry PI
 -------
 
-  The robot is built from a Raspberry PI III SBC and a Neato BV80 robot vacume base.
+### Initial SD Card Image
+
+  The robot is built from a Raspberry PI III SBC and a Neato BV80 or later robot vacume base.
+  
+  The start use a blank 16Gb or 32GB SDCARD and install the Ubuntu Image from Ubiquity robotics:
   
   Follow the instructions from Ubiquity Robotics for building a ROS image on the PI.
-  https://downloads.ubiquityrobotics.com   This will allow you to place a ROS image on a 16g SD card which can 
-  then directly boot the PI with Lubuntu 16.04, ROS Kinetic. Since this image is for another robot, 
-  additional modifications to the PI's OS will be required to make a working robot.
+  https://downloads.ubiquityrobotics.com   This will allow you to place a ROS image on a 16Gb or 32Gb SD card which can 
+  then directly boot the PI with Lubuntu 16.04 and ROS Kinetic pre installed. Since this image is for another robot, 
+  additional modifications to the PI's OS will be required to make a working robot as detailed below.
   
-  
-  Also install ALL of the following(Note some of the turtlebot packages may not be available in kinetic, this needs testing):
+ ### Setup the Intro to ROS Packages 
+ 
+After creating the SDCard insert it into the Rasperry PI and boot it - at this point its best if you have an HDMI monitr, mouse and keyboard attached or you can work via an SSh terminal sesion.
+ 
+Initial login is as:
+
+     user -  ubuntu 
+     
+     password-  ubuntu
+     
+First disable the pre loaded ubiquity robotics ROS stacks that are auto started with the following command:
+
+```sudo systemctl disable magni-base```
+
+If you dont always weant to login as the ubuntu user you may want to create a new user - just follow standard Ubuntu admin steps to do this.
+
+Login as your preffered user.
+
+Use the noirmal Ubuntu networking steps to connect to a sutable WiFi network.
+
+Now update the instaled image:
+
+   ```
+   sudo apt-get update
+
+   sudo apt-get upgrade
+   ```
+   
+Make sure ROS files are upto date:
+
   ```
-  sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
-```
-  
-  Git clone this repo to the catkin_ws/src folder on the PI and you Laptop/PC.
+  rosdep update
+  ```
+
+Create a new ROS catkin workspace under your home directory, then git clone the intro_to_ros repo to the catkin_ws/src folder.
   
   <b>Note: do this on both your PC/Laptop and the Raspberry PI.</b>, 
   
   you need copies of the files on both computers.
   
   ```
+  mkdir -p ~/catkin_ws/src
   cd ~/catkin_ws/src
   git clone https://github.com/SV-ROS/intro_to_ros.git
   ```
@@ -60,6 +93,19 @@ bv80bot
    git clone https://github.com/pirobot/rbx1
    git clone https://github.com/vanadiumlabs/arbotix_ros
   ```
+  
+  Now install the extra dependancies needed to run the ROS nodes, this can be done with the rosdep command
+  
+  ```
+  cd ~/catkin_ws
+  rosdep update --from-src src
+  
+  
+   Also install ALL of the following(Note some of the turtlebot packages may not be available in kinetic, this needs testing):
+  ```
+  sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
+```
+
   
   do a catkin_make on the workspace (on both computers)
   
