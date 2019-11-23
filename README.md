@@ -107,11 +107,29 @@ Also install ALL of the following:
   catkin_make
   ```
   
-  Also make sure you have chrony installed on both the PC/Laptop and the PI:
-  
-  ```
-  sudo apt-get install chrony
-  ```
+  Now you can update the .bashrc file in your home directory:
+
+  open ~/.bashrc  in vi or whatever text editor you prefer
+
+  Near the end find the line:
+   ```
+     source /opt/ros/kinetic/setup.bash
+   ```
+
+  comment out this line and replace it as shown:
+    ```
+      #source /opt/ros/kinetic/setup.bash
+      source ~/catkin_ws/devel/setup.bash
+    ```
+  Save and close the editor
+
+  now close and reopen a terminal or just source ~/.bashrc
+
+  You should now be able to launch the ROS code as discussed below.
+
+
+
+
  ## Running the Robot
  
   There are a number of different way to launch the robot depending on where you want to run the packages.
