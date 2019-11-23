@@ -44,7 +44,7 @@ https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
   
  ### Setup the Intro to ROS Packages 
  
-After creating the SDCard insert it into the Rasperry PI and boot it - at this point its best if you have an HDMI monitr, mouse and keyboard attached or you can work via an SSh terminal sesion.
+After creating the SDCard insert it into the Rasperry PI and boot it - at this point its best if you have an HDMI monitor, mouse and keyboard attached or you can work via an SSH terminal sesion.
  
 Initial login is as:
 
