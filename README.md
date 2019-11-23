@@ -35,11 +35,11 @@ https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
 
   The robot is built from a Raspberry PI III SBC and a Neato BV80 or later robot vacume base.
   
-  The start use a blank 16Gb or 32GB SDCARD and install the Ubuntu Image from Ubiquity robotics:
+  To start use a blank 16Gb or 32Gb SDcard and install the Ubuntu Image from Ubiquity robotics:
   
   Follow the instructions from Ubiquity Robotics for building a ROS image on the PI.
   https://downloads.ubiquityrobotics.com   This will allow you to place a ROS image on a 16Gb or 32Gb SD card which can 
-  then directly boot the PI with Lubuntu 16.04 and ROS Kinetic pre installed. Since this image is for another robot, 
+  then directly boot the PI with ubuntu 16.04 and ROS Kinetic pre installed. Since this image is for another robot, 
   additional modifications to the PI's OS will be required to make a working robot as detailed below.
   
  ### Setup the Intro to ROS Packages 
