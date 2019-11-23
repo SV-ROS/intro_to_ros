@@ -63,11 +63,11 @@ Use the normal Ubuntu networking steps to connect to a suitable WiFi network.
 
 Now update the instaled image:
 
-   ```
+```
    sudo apt-get update
    sudo apt-get upgrade
-   ```
-   
+```
+
 Make sure ROS files are upto date:
 
   ```
