@@ -1,8 +1,12 @@
 <launch>
 
-  <include file="$(find bv80bot_node)/launch/include/bv80bot_map.launch" />
 
+ <arg name="robot_name" default="" />
 
-  <include file="$(find bv80bot_node)/launch/include/bv80bot_gui.launch" />
+  <group ns="$(arg robot_name)">
+     <include file="$(find bv80bot_node)/launch/include/bv80bot_map.launch" />
+     <include file="$(find bv80bot_node)/launch/include/bv80bot_gui.launch" />
+  </group>
+
 </launch>
 

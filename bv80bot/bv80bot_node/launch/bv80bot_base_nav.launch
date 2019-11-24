@@ -2,10 +2,17 @@
 
   <arg name="map_name" default="map" />
 
-  <include file="$(find bv80bot_node)/launch/include/bv80bot_nav.launch" >
-	<arg name="map_name" value="$(arg map_name)" />
-  </include>
+  <arg name="robot_name" default="" />
 
-  <include file="$(find bv80bot_node)/launch/include/bv80bot_base.launch" />
+  <group ns="$(arg robot_name)">
+
+     <include file="$(find bv80bot_node)/launch/include/bv80bot_nav.launch" >
+	<arg name="map_name" value="$(arg map_name)" />
+     </include>
+
+     <include file="$(find bv80bot_node)/launch/include/bv80bot_base.launch" />
+
+  </group>
+
 </launch>
 
