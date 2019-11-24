@@ -74,14 +74,17 @@ class NeatoNode:
         self.th = 0
         then = rospy.Time.now()
 
-        tf_key=rospy.search_param('~tf_prefix','')
-        self.tf_prefix=rospy.search_param('tf_key,'')
+        tf_key=rospy.search_param('tf_prefix')
+        self.tf_prefix=rospy.get_param(tf_key,'')
 
-        
+        if self.tf_prefix != '' and not self.tf_prefix.endswith('/'):
+            self.tf_prefix += '/'
+
+        rospy.loginfo("Using tf_prefix: %s" % self.tf_prefix)       
 
         # things that don't ever change
         scan_link = rospy.get_param('~frame_id', 'base_laser_link')
-        scan = LaserScan(header=rospy.Header(frame_id=self.tf_prefix++scan_link))
+        scan = LaserScan(header=rospy.Header(frame_id=self.tf_prefix+scan_link))
 
 
    
@@ -169,7 +172,7 @@ class NeatoNode:
 
             # publish everything
             self.odomBroadcaster.sendTransform((self.x, self.y, 0), (quaternion.x, quaternion.y, quaternion.z,
-                                                                     quaternion.w), then, "base_footprint", "odom")
+                                                                     quaternion.w), then, self.tf_prefix+"base_footprint", self.tf_prefix+"odom")
             self.scanPub.publish(scan)
             self.odomPub.publish(odom)
             button_enum = ("Soft_Button", "Up_Button", "Start_Button", "Back_Button", "Down_Button")
