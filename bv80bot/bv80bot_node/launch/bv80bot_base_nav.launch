@@ -2,7 +2,7 @@
 
   <arg name="map_name" default="map" />
 
-  <arg name="robot_name" default="" />
+  <arg name="robot_name" default="/" />
 
   <group ns="$(arg robot_name)">
 
