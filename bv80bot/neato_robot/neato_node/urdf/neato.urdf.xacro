@@ -25,4 +25,14 @@
        <child link="base_link" />
 
    </joint>
+
+   <link name="base_laser_link" />
+   <joint name="laser_to_base" type="fixed">    
+       <origin xyz="-0.090 0.0 0.037" rpy="0 0 0" />
+       <parent link="base_link" />
+       <child link="base_laser_link" />
+
+   </joint>
+
+
 </robot>
