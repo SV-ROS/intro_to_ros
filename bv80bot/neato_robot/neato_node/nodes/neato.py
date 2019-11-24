@@ -74,17 +74,24 @@ class NeatoNode:
         self.th = 0
         then = rospy.Time.now()
 
+        tf_key=rospy.search_param('~tf_prefix','')
+        self.tf_prefix=rospy.search_param('tf_key,'')
+
+        
+
         # things that don't ever change
         scan_link = rospy.get_param('~frame_id', 'base_laser_link')
-        scan = LaserScan(header=rospy.Header(frame_id=scan_link))
+        scan = LaserScan(header=rospy.Header(frame_id=self.tf_prefix++scan_link))
 
+
+   
         scan.angle_min =0.0 
         scan.angle_max =359.0*pi/180.0 
         scan.angle_increment =pi/180.0 
         scan.range_min = 0.020
         scan.range_max = 5.0
 
-        odom = Odometry(header=rospy.Header(frame_id="odom"), child_frame_id='base_footprint')
+        odom = Odometry(header=rospy.Header(frame_id=self.tf_prefix+"odom"), child_frame_id=self.tf_prefix+"base_footprint")
 
         button = Button()
         sensor = Sensor()
