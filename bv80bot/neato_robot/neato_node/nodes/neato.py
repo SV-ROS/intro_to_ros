@@ -75,10 +75,14 @@ class NeatoNode:
         then = rospy.Time.now()
 
         tf_key=rospy.search_param('tf_prefix')
-        self.tf_prefix=rospy.get_param(tf_key,'')
-
-        if self.tf_prefix != '' and not self.tf_prefix.endswith('/'):
-            self.tf_prefix += '/'
+        rospy.loginfo("tf_prefix keys: %s" % str(tf_key))
+        if tf_key is None:
+            self.tf_prefix=''
+	else:
+		self.tf_prefix=rospy.get_param(tf_key,'')
+        
+       		if self.tf_prefix != '' and not self.tf_prefix.endswith('/'):
+            		self.tf_prefix += '/'
 
         rospy.loginfo("Using tf_prefix: %s" % self.tf_prefix)       
 

@@ -8,6 +8,7 @@
 
      <include file="$(find bv80bot_node)/launch/include/bv80bot_nav.launch" >
 	<arg name="map_name" value="$(arg map_name)" />
+        <arg name="robot_name" value="$(arg robot_name)" />
      </include>
 
      <include file="$(find bv80bot_node)/launch/include/bv80bot_base.launch" />
