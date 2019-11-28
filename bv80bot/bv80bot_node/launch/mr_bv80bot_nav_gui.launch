@@ -1,0 +1,14 @@
+<launch>
+  <arg name="map_name" default="map" />
+
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/$(arg map_name).yaml"/>
+    
+  <include file="$(find bv80bot_node)/launch/bv80bot_nav_gui.launch" >
+     <arg name="robot_name" value="bot1" />
+     <arg name="map_name" value="$(arg map_name)" />
+  </include>
+  
+
+
+</launch>
+

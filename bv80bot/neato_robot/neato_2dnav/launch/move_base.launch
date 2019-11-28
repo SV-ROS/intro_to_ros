@@ -1,12 +1,19 @@
 <launch>
-  <param name="use_sim_time" value="false"/>
+
+  <arg name="use_sim_time" default="false" />
+  <param name="use_sim_time" value="$(arg use_sim_time)" />
 
   <arg name="map_name" default="map" />
+  <arg name="robot_name" default="/" />
 
-  <!-- Run the map server -->
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/$(arg map_name).yaml"/>
+  <!-- Run the map server unless we are in multi robot mode - then map server is run in global name space -->
+  <node if="$(eval robot_name=='/')"  name="map_server" pkg="map_server" type="map_server" args="$(find neato_2dnav)/maps/$(arg map_name).yaml"/>
+    
 
-  <include file="$(find neato_2dnav)/launch/amcl.launch" />
+
+  <include file="$(find neato_2dnav)/launch/amcl.launch" >
+     <arg name="robot_name" value="$(arg robot_name)" />
+  </include>
 
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find neato_2dnav)/param/costmap_common_params.yaml" command="load" ns="global_costmap" />
@@ -14,6 +21,26 @@
     <rosparam file="$(find neato_2dnav)/param/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find neato_2dnav)/param/global_costmap_params.yaml" command="load" />
     <rosparam file="$(find neato_2dnav)/param/base_local_planner_params.yaml" command="load" />
+
+
+    <param unless="$(eval robot_name=='/')" name="global_costmap/robot_base_frame" value="$(arg robot_name)/base_footprint" />
+    <param if="$(eval robot_name=='/')" name="global_costmap/robot_base_frame" value="base_footprint" />
+
+    <param name="global_costmap/global_frame" value="map" />
+
+
+
+    <param unless="$(eval robot_name=='/')" name="local_costmap/robot_base_frame" value="$(arg robot_name)/base_footprint" />
+    <param if="$(eval robot_name=='/')" name="local_costmap/robot_base_frame" value="base_footprint" />
+ 
+    <param unless="$(eval robot_name=='/')" name="local_costmap/global_frame" value="$(arg robot_name)/odom" />
+    <param if="$(eval robot_name=='/')" name="local_costmap/global_frame" value="odom" />
+
+    <param unless="$(eval robot_name=='/')" name="DWAPlannerROS/global_frame_id" value="$(arg robot_name)/odom" />
+    <param if="$(eval robot_name=='/')" name="DWAPlannerROS/global_frame_id" value="odom" />
+
+    <remap from="map" to="/map" />
+
   </node>
 
 </launch>

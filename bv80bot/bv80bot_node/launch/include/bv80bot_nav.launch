@@ -1,9 +1,11 @@
 <launch>
 
   <arg name="map_name" default="map" />
+  <arg name="robot_name" default="/" />
 
   <include  file="$(find neato_2dnav)/launch/move_base.launch" >
 	<arg name="map_name" value="$(arg map_name)" />
+        <arg name="robot_name" value="$(arg robot_name)" />
   </include>
 
 </launch>
