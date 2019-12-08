@@ -1,9 +1,9 @@
 <launch>
 
   <arg name="map_name" default="map" />
-
   <arg name="robot_name" default="/" />
-  <param unless="$(eval robot_name=='/')" name="tf_prefix" value="$(arg robot_name)" />
+  
+<param unless="$(eval robot_name=='/')" name="tf_prefix" value="$(arg robot_name)" />
 
   <group ns="$(arg robot_name)">
 
@@ -12,7 +12,9 @@
         <arg name="robot_name" value="$(arg robot_name)" />
      </include>
 
-     <include file="$(find bv80bot_node)/launch/include/bv80bot_base.launch" />
+     <include file="$(find bv80bot_node)/launch/include/bv80bot_base.launch" >
+        <arg name="robot_name" value="$(arg robot_name)" />
+     </include>
 
   </group>
 
