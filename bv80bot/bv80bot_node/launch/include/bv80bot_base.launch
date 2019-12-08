@@ -40,7 +40,7 @@
   <node name="neato" pkg="neato_node" type="neato.py" output="screen">
     <param name="port" value="/dev/ttyACM0" />
     <remap from="cmd_vel" to="robot_cmd_vel" />
-    <remap from="base_scan" to="scan" />
+    <remap from="base_scan" to="scan_raw" />
   </node>
  
   <!-- publish teh URDF -->
@@ -50,6 +50,10 @@
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" >
       <param name="use_gui" value="False"/>
   </node>
+
+  <include file="$(find laser_virtual_filter)/launch/laser_filters.launch" >
+       <arg name="robot_name" value="$(arg robot_name)" />
+  </include>
 
 </launch>
 
