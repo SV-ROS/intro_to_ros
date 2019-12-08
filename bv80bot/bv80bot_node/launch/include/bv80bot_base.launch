@@ -1,5 +1,7 @@
 <launch>
 
+  <arg name="robot_name" default="/" />
+
   <!-- Change this to use a different joystick controller -->
   <!-- Set the default value for the 'teleop_controler' arg below to one of the folowing values to select the controler you are using to teleop the robot:
 	ps3
@@ -16,7 +18,7 @@
   
 
   <!-- launch the teleop controler -->
-  <include file="$(find bv80bot_node)/launch/include/$(arg teleop_controler)_teleop.launch" />
+  <include if="$(eval robot_name=='/')" file="$(find bv80bot_node)/launch/include/$(arg teleop_controler)_teleop.launch" />
 
   
   <!--  smooths inputs from cmd_vel_mux/input/teleop_raw to cmd_vel_mux/input/teleop -->

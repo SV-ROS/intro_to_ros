@@ -23,20 +23,20 @@
     <rosparam file="$(find neato_2dnav)/param/base_local_planner_params.yaml" command="load" />
 
 
-    <param unless="$(eval robot_name=='/')" name="global_costmap/robot_base_frame" value="$(arg robot_name)/base_footprint" />
+    <param unless="$(eval robot_name=='/')" name="global_costmap/robot_base_frame" value="/$(arg robot_name)/base_footprint" />
     <param if="$(eval robot_name=='/')" name="global_costmap/robot_base_frame" value="base_footprint" />
 
-    <param name="global_costmap/global_frame" value="map" />
+    <param name="global_costmap/global_frame" value="/map" />
 
 
 
-    <param unless="$(eval robot_name=='/')" name="local_costmap/robot_base_frame" value="$(arg robot_name)/base_footprint" />
+    <param unless="$(eval robot_name=='/')" name="local_costmap/robot_base_frame" value="/$(arg robot_name)/base_footprint" />
     <param if="$(eval robot_name=='/')" name="local_costmap/robot_base_frame" value="base_footprint" />
  
-    <param unless="$(eval robot_name=='/')" name="local_costmap/global_frame" value="$(arg robot_name)/odom" />
+    <param unless="$(eval robot_name=='/')" name="local_costmap/global_frame" value="/$(arg robot_name)/odom" />
     <param if="$(eval robot_name=='/')" name="local_costmap/global_frame" value="odom" />
 
-    <param unless="$(eval robot_name=='/')" name="DWAPlannerROS/global_frame_id" value="$(arg robot_name)/odom" />
+    <param unless="$(eval robot_name=='/')" name="DWAPlannerROS/global_frame_id" value="/$(arg robot_name)/odom" />
     <param if="$(eval robot_name=='/')" name="DWAPlannerROS/global_frame_id" value="odom" />
 
     <remap from="map" to="/map" />
