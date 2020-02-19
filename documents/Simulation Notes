@@ -1,0 +1,43 @@
+Prerequsites:
+
+Abotix Simulation
+
+after ROS full desktop install
+
+sudo apt install ros-*-arbotix-python
+
+catkin install and make  of
+
+github.com/pirobot/rbx1
+
+
+After installation try:
+
+roslaunch rbx1_bringup fake_turtlebot.launch &
+
+(optionally)
+
+
+roslaunch rbx1_nav fake_move_base_map_with_obstacles.launch &
+
+
+rosrun rviz rviz  (rbx1/rbx1_nav/nav.rviz)
+
+
+then rosrun   teleop_twist keyboard  or other rbx1_nav/nodes  programs.
+
+
+
+Magni Gazebo  Simulations
+
+
+sudo apt install ros-*-magni-robot   or   catkin_make  github ubiquityrobotics/magni_robot
+
+after
+
+roslaunch magni_gazebo empty_world.launch &
+
+pkill roslaunch
+
+
+roslaunch magni_gazebo fiducial_world.launch
