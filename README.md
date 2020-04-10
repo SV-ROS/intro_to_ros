@@ -5,7 +5,7 @@ This repo will contain the software and documents for the SV-ROS 2015 Intro to R
 
 As of January, 2018, many updates have occurred, so we will be updating the documentation.
 
-The series involes a set of talks presenting a general introduction to ROS and building ROS Robots.
+The series involves a set of talks presenting a general introduction to ROS and building ROS Robots.
 
 Reference Robot designs are provided as a guide to getting started.
 
@@ -23,7 +23,7 @@ Also type HELP in a terminal connected to the port to get the built in command h
 
 USB Serial API doc - https://tinyurl.com/Neato-Programmers-Manual
 
-Other usefull info on the Lidar
+Other useful info on the Lidar
 
 https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
 
@@ -33,7 +33,7 @@ https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
 
 ### Initial SD Card Image
 
-  The robot is built from a Raspberry PI III SBC and a Neato BV80 or later robot vacume base.
+  The robot is built from a Raspberry PI III SBC and a Neato BV80 or later robot vacuum base.
   
   To start use a blank 16Gb or 32Gb SDcard and install the Ubuntu Image from Ubiquity robotics:
   
@@ -44,7 +44,7 @@ https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
   
  ### Setup the Intro to ROS Packages 
  
-After creating the SDCard insert it into the Rasperry PI and boot it - at this point its best if you have an HDMI monitor, mouse and keyboard attached or you can work via an SSH terminal sesion.
+After creating the SDCard insert it into the Rasperry PI and boot it - at this point its best if you have an HDMI monitor, mouse and keyboard attached or you can work via an SSH terminal session.
  
 Initial login using:
 
@@ -57,18 +57,18 @@ First disable the pre loaded ubiquity robotics ROS stacks that are auto started 
 
 If you don't always want to login as the ubuntu user you may want to create a new user - just follow standard Ubuntu admin steps to do this.
 
-Login as your preffered user.
+Login as your prefered user.
 
 Use the normal Ubuntu networking steps to connect to a suitable WiFi network.
 
-Now update the instaled image:
+Now update the installed image:
 
 ```
    sudo apt-get update
    sudo apt-get upgrade
 ```
 
-Make sure ROS files are upto date:
+Make sure ROS files are up to date:
 
   ```
   rosdep update
