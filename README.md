@@ -93,11 +93,14 @@ Create a new ROS catkin workspace under your home directory, then git clone the 
   ```
 
   
-Also install ALL of the following:
-  ```
-  sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
-```
+Also install the depedancies using the following command:
 
+
+```
+cd ~/catkin_ws
+
+rosdep install --from-paths src --ignore-src -r -y
+```
   
   do a catkin_make on the workspace (on both computers)
   
@@ -113,15 +116,18 @@ Also install ALL of the following:
   Near the end find the line:
   
    ```
-     source /opt/ros/kinetic/setup.bash
+     source /opt/ros/<distro>/setup.bash
    ```
 
   comment out this line and replace it as shown:
  
 ```
-  # source /opt/ros/kinetic/setup.bash
+  # source /opt/ros/<distro>/setup.bash
   source ~/catkin_ws/devel/setup.bash
 ```
+
+Note: in the above change &lt;distro&gt; to kinetic or melodic depending on what platform you are using
+  
   Save and close the editor
 
   now close and reopen a terminal or just source ~/.bashrc
