@@ -104,7 +104,7 @@ If building on kinetic
 if building on melodic
 
 ```
-sudo apt-get install ros-melodic-xacro ros-melodic-yocs-cmd-vel-mux ros-melodic-yocs-velocity-smoother
+sudo apt-get install ros-melodic-xacro ros-melodic-yocs-cmd-vel-mux ros-melodic-yocs-velocity-smoother ros-melodic-teleop-twist-joy ros-melodic-teleop-twist-keyboard
 ```
   
   do a catkin_make on the workspace (on both computers)
