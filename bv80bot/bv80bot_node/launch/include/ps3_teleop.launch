@@ -1,14 +1,16 @@
 <launch>
 
-  <node pkg="turtlebot_teleop" type="turtlebot_teleop_joy" name="teleop_joystick">
+  <node pkg="teleop_twist_joy" type="teleop_node" name="teleop_joystick">
     <param name="scale_angular" value="1.5"/>
     <param name="scale_linear" value="0.5"/>
-    <param name="axis_deadman" value="10"/>
+    <param name="enable_button" value="10"/>
     <param name="axis_linear" value="1"/>
     <param name="axis_angular" value="0"/>
     <remap from="teleop_joystick/cmd_vel" to="/raw_cmd_vel"/>
   </node>
 
-  <node pkg="joy" type="joy_node" name="joystick"/>
+  <node pkg="joy" type="joy_node" name="joystick">
+      <param name="autorepeat_rate" value="4" />
+  </node>
 
 </launch>
