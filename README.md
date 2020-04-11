@@ -93,7 +93,7 @@ Create a new ROS catkin workspace under your home directory, then git clone the 
   ```
 
   
-Also install the depedanciesusing the following command:
+Also install the depedancies using the following command:
 
 
 ```
