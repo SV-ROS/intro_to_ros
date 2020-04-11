@@ -93,18 +93,13 @@ Create a new ROS catkin workspace under your home directory, then git clone the 
   ```
 
   
-Also install ALL of the following:
+Also install the depedanciesusing the following command:
 
-If building on kinetic
-
-  ```
-  sudo apt-get install ros-kinetic-xacro ros-kinetic-turtlebot-description ros-kinetic-turtlebot-navigation ros-kinetic-turtlebot-teleop ros-kinetic-yocs-cmd-vel-mux ros-kinetic-yocs-velocity-smoother
-```
-
-if building on melodic
 
 ```
-sudo apt-get install ros-melodic-xacro ros-melodic-yocs-cmd-vel-mux ros-melodic-yocs-velocity-smoother ros-melodic-teleop-twist-joy ros-melodic-teleop-twist-keyboard
+cd ~/catkin_ws
+
+rosdep install --from-paths src --ignore-src -r -y
 ```
   
   do a catkin_make on the workspace (on both computers)
