@@ -121,15 +121,18 @@ sudo apt-get install ros-melodic-xacro ros-melodic-yocs-cmd-vel-mux ros-melodic-
   Near the end find the line:
   
    ```
-     source /opt/ros/kinetic/setup.bash
+     source /opt/ros/<distro>/setup.bash
    ```
 
   comment out this line and replace it as shown:
  
 ```
-  # source /opt/ros/kinetic/setup.bash
+  # source /opt/ros/<distro>/setup.bash
   source ~/catkin_ws/devel/setup.bash
 ```
+
+Note: in the above change <distro> to kinetic or melodic depending on what platform you are using
+  
   Save and close the editor
 
   now close and reopen a terminal or just source ~/.bashrc
