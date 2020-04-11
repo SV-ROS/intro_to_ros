@@ -131,7 +131,7 @@ sudo apt-get install ros-melodic-xacro ros-melodic-yocs-cmd-vel-mux ros-melodic-
   source ~/catkin_ws/devel/setup.bash
 ```
 
-Note: in the above change <distro> to kinetic or melodic depending on what platform you are using
+Note: in the above change &lt;distro&gt; to kinetic or melodic depending on what platform you are using
   
   Save and close the editor
 
