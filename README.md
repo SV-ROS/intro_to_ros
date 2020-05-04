@@ -101,6 +101,13 @@ cd ~/catkin_ws
 
 rosdep install --from-paths src --ignore-src -r -y
 ```
+
+If you receive an error: 
+```'Cannot locate rosdep definition for [yocs-velocity-smoother]'```
+you will need to install it manualy
+
+```sudo apt-get install ros-<distro>-yocs-velocity-smoother```
+
   
   do a catkin_make on the workspace (on both computers)
   
