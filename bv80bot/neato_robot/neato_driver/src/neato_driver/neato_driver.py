@@ -202,7 +202,7 @@ class Botvac():
 
         if not self.readTo("AngleInDegrees"):
             self.flush()
-            return []
+            return ranges, intensities
 
         last=False
         while not last: #angle < 360:
