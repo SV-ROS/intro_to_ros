@@ -1,0 +1,4 @@
+<launch>
+  <include file="$(find neato_robot)/launch/include/bv80bot_base.launch" />
+</launch>
+

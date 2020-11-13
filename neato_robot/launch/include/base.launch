@@ -6,20 +6,21 @@
         xbox360
         keyboard
         logitech
+  -->
+  <arg name="teleop_controler"   default="xbox360" />
 
-This version adds the transform for a Raspicam using the raspicam_node by ubiquity robotics
--->
-  <arg name="teleop_controler"   default="logitech" />
+
   <arg name="input_cmd_vel_topic"    default="/raw_cmd_vel" />
   <arg name="feedback_cmd_vel_topic" default="robot_cmd_vel" />
   <arg name="output_cmd_vel_topic"   default="smoothed_cmd_vel" />
   
 
-  <include file="$(find bv80bot_node)/launch/include/$(arg teleop_controler)_teleop.launch" />
+  <!-- launch the teleop controler -->
+  <include file="$(find neato_robot)/launch/include/$(arg teleop_controler)_teleop.launch" />
 
   
   <!--  smooths inputs from cmd_vel_mux/input/teleop_raw to cmd_vel_mux/input/teleop -->
-  <include file="$(find bv80bot_node)/launch/include/velocity_smoother.launch">
+  <include file="$(find neato_robot)/launch/include/velocity_smoother.launch">
     <arg name="input_cmd_vel_topic"    value="$(arg input_cmd_vel_topic)" />
     <arg name="feedback_cmd_vel_topic" value="$(arg feedback_cmd_vel_topic)" />
     <arg name="output_cmd_vel_topic"   value="$(arg output_cmd_vel_topic)" />
@@ -28,7 +29,7 @@ This version adds the transform for a Raspicam using the raspicam_node by ubiqui
   
   <!-- velocity commands multiplexer -->
   <node pkg="nodelet" type="nodelet" name="cmd_vel_mux" args="load yocs_cmd_vel_mux/CmdVelMuxNodelet mobile_base_nodelet_manager">
-    <param name="yaml_cfg_file" value="$(find bv80bot_node)/param/mux.yaml"/>
+    <param name="yaml_cfg_file" value="$(find neato_robot)/param/mux.yaml"/>
     <remap from="cmd_vel_mux/output" to="/robot_cmd_vel"/>
     <remap from="cmd_vel_mux/input/navi" to="/cmd_vel"/>
     <remap from="cmd_vel_mux/input/teleop" to="$(arg output_cmd_vel_topic)" />
@@ -37,8 +38,6 @@ This version adds the transform for a Raspicam using the raspicam_node by ubiqui
   
   <!-- create transform for laser (should be moved to the URDF) -->
   <node name="laser_to_base" pkg="tf2_ros" type="static_transform_publisher"  args="-0.090 0.0 0.037 0 0 0 1 base_link base_laser_link" />
-
-  <node name="raspicam_to_base" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0.12 -1.57 0 -1.57 base_link raspicam"/>
 
   <!-- launch the main base driver node -->
   <node name="neato" pkg="neato_node" type="neato.py" output="screen">
@@ -49,7 +48,7 @@ This version adds the transform for a Raspicam using the raspicam_node by ubiqui
  
   <!-- publish teh URDF -->
   <param name="robot_description" command="$(find xacro)/xacro.py $(find neato_node)/urdf/neato.urdf.xacro" />
-
+  
   <!-- publish the robot state transforms -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen" >
       <param name="use_gui" value="False"/>

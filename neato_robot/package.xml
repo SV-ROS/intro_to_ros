@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>bv80bot_node</name>
+  <name>neato_robot</name>
   <version>0.0.0</version>
   <description>The bv80bot_node package provides the drivers and configuration for using a Neato BV80 with a raspberry PI II SBC</description>
 
