@@ -6,16 +6,15 @@
 #   name:           Source name
 #   topic:          The topic that provides cmd_vel messages
 #   timeout:        Time in seconds without incoming messages to consider this topic inactive
-#   priority:       Priority: an UNIQUE unsigned integer from 0 (lowest) to MAX_INT 
+#   priority:       Priority: an UNIQUE unsigned integer from 0 (lowest) to MAX_INT
 #   short_desc:     Short description (optional)
 
 subscribers:
-  - name:        "Teleoperation"
-    topic:       "input/teleop"
-    timeout:     0.2
-    priority:    7
-  - name:        "Navigation"
-    topic:       "input/navi"
-    timeout:     2.0
-    priority:    5
-
+  - name: 'Teleoperation'
+    topic: 'input/teleop'
+    timeout: 0.2
+    priority: 7
+  - name: 'Navigation'
+    topic: 'input/navi'
+    timeout: 2.0
+    priority: 5

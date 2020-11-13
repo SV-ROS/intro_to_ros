@@ -1,7 +1,6 @@
 base_global_planner: navfn/NavfnROS
 base_local_planner: dwa_local_planner/DWAPlannerROS
 
-
 planner_frequency: 2.0
 controller_frequency: 1.5
 
@@ -18,10 +17,7 @@ shutdown_cost_maps: true
 oscillation_timeout: 9.0
 oscillation_distance: 0.25
 
-
-
 DWAPlannerROS:
-
   max_vel_trans: 0.15
   min_vel_trans: 0.015
 
@@ -39,7 +35,7 @@ DWAPlannerROS:
   acc_lim_theta: 0.5
   acc_lim_trans: 0.1
 
-  xy_goal_tolerance: 0.075 
+  xy_goal_tolerance: 0.075
   yaw_goal_tolerance: 0.25
   latch_xy_goal_tolerance: true
   prune_plan: true
@@ -48,10 +44,10 @@ DWAPlannerROS:
   theta_stopped_vel: 0.1
 
   sim_time: 3.0
-  sim_granularity:  0.025
+  sim_granularity: 0.025
 
   angular_sim_granularity: 0.015
-  
+
   path_distance_bias: 50.0
   goal_distance_bias: 30.0
   occdist_scale: 0.9
@@ -64,15 +60,10 @@ DWAPlannerROS:
   forward_point_distance: 0.433
 
   scaling_speed: 0.5
-  max_scaling_factor: 1.17 
-  
+  max_scaling_factor: 1.17
+
   vx_samples: 20
   vy_samples: 10
   vth_samples: 20
 
   use_dwa: true
-
-
-  
- 
-

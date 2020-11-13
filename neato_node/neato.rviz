@@ -38,7 +38,7 @@ Panels:
     SyncMode: 0
     SyncSource: LaserScan
 Visualization Manager:
-  Class: ""
+  Class: ''
   Displays:
     - Alpha: 0.5
       Cell Size: 1
@@ -112,7 +112,7 @@ Visualization Manager:
           Value: true
       Name: RobotModel
       Robot Description: robot_description
-      TF Prefix: ""
+      TF Prefix: ''
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -197,8 +197,7 @@ Visualization Manager:
         map:
           odom:
             base_link:
-              base_laser_link:
-                {}
+              base_laser_link: {}
       Update Interval: 0
       Value: true
     - Class: rviz/Image

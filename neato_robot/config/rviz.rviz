@@ -39,7 +39,7 @@ Preferences:
 Toolbars:
   toolButtonStyle: 2
 Visualization Manager:
-  Class: ""
+  Class: ''
   Displays:
     - Alpha: 0.5
       Cell Size: 1
@@ -90,7 +90,7 @@ Visualization Manager:
           Value: true
       Name: RobotModel
       Robot Description: robot_description
-      TF Prefix: ""
+      TF Prefix: ''
       Update Interval: 0
       Value: true
       Visual Enabled: true
@@ -169,8 +169,7 @@ Visualization Manager:
       Show Arrows: true
       Show Axes: true
       Show Names: true
-      Tree:
-        {}
+      Tree: {}
       Update Interval: 0
       Value: false
     - Alpha: 1

@@ -13,8 +13,6 @@ generate_messages(
   DEPENDENCIES
 )
 
-#catkin_package(DEPENDS message_runtime )
-
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )

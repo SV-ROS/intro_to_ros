@@ -1,5 +1,5 @@
 global_costmap:
-  transform_tolerance: 2.0 
+  transform_tolerance: 2.0
 
   update_frequency: 1.0
   publish_frequency: 2.0
@@ -10,7 +10,6 @@ global_costmap:
 
   footprint_padding: 0.0
 
-  
   static_map: true
 
   global_frame: map
@@ -19,4 +18,3 @@ global_costmap:
   inflation_layer:
     inflation_radius: 0.26
     cost_scaling_factor: 9.0
-    

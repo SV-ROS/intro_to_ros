@@ -5,14 +5,14 @@
 -->
 <launch>
 
-  <node pkg="teleop_twist_joy" type="teleop_node" name="teleop_joystick">
-    <param name="scale_angular" value="1.5"/>
-    <param name="scale_linear" value="0.5"/>
-    <remap from="teleop_joystick/cmd_vel" to="/raw_cmd_vel"/>
-    <param name="enable_button" value="10"/>
-  </node>
+    <node pkg="teleop_twist_joy" type="teleop_node" name="teleop_joystick">
+        <param name="scale_angular" value="1.5" />
+        <param name="scale_linear" value="0.5" />
+        <remap from="teleop_joystick/cmd_vel" to="/raw_cmd_vel" />
+        <param name="enable_button" value="10" />
+    </node>
 
-  <node pkg="joy" type="joy_node" name="joystick">
-      <param name="autorepeat_rate" value="4" />
-  </node>
+    <node pkg="joy" type="joy_node" name="joystick">
+        <param name="autorepeat_rate" value="4" />
+    </node>
 </launch>
