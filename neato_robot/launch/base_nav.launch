@@ -2,9 +2,9 @@
 
     <arg name="map_name" default="map" />
 
-    <include file="$(find neato_robot)/launch/include/bv80bot_nav.launch">
+    <include file="$(find neato_robot)/launch/include/nav.launch">
         <arg name="map_name" value="$(arg map_name)" />
     </include>
 
-    <include file="$(find neato_robot)/launch/include/bv80bot_base.launch" />
+    <include file="$(find neato_robot)/launch/include/base.launch" />
 </launch>

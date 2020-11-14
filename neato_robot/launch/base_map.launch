@@ -1,6 +1,6 @@
 <launch>
 
-    <include file="$(find neato_robot)/launch/include/bv80bot_map.launch" />
+    <include file="$(find neato_robot)/launch/include/map.launch" />
 
-    <include file="$(find neato_robot)/launch/include/bv80bot_base.launch" />
+    <include file="$(find neato_robot)/launch/include/base.launch" />
 </launch>
