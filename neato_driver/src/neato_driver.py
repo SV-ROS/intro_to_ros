@@ -24,101 +24,39 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 neato_driver.py is a generic driver for the Neato XV-11 Robotic Vacuum.
-ROS Bindings can be found in the neato_node package.
 """
 
 __author__ = "ferguson@cs.albany.edu (Michael Ferguson)"
 
 import serial
 import rospy
+import roslib
 import time
 import threading
 
-BASE_WIDTH = 248    # millimeters
-MAX_SPEED = 300     # millimeters/second
+from math import sin, cos, pi
+from tf.broadcaster import TransformBroadcaster
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Quaternion
+from neato_node.msg import Button, Sensor
+from sensor_msgs.msg import LaserScan
 
-xv11_analog_sensors = ["WallSensorInMM",
-                       "BatteryVoltageInmV",
-                       "LeftDropInMM",
-                       "RightDropInMM",
-                       "RightMagSensor",
-                       "LeftMagSensor",
-                       "XTemp0InC",
-                       "XTemp1InC",
-                       "VacuumCurrentInmA",
-                       "ChargeVoltInmV",
-                       "NotConnected1",
-                       "BatteryTemp1InC",
-                       "NotConnected2",
-                       "CurrentInmA",
-                       "NotConnected3",
-                       "BatteryTemp0InC"]
-
-xv11_digital_sensors = ["SNSR_DC_JACK_CONNECT",
-                        "SNSR_DUSTBIN_IS_IN",
-                        "SNSR_LEFT_WHEEL_EXTENDED",
-                        "SNSR_RIGHT_WHEEL_EXTENDED",
-                        "LSIDEBIT",
-                        "LFRONTBIT",
-                        "RSIDEBIT",
-                        "RFRONTBIT"]
-
-xv11_motor_info = ["Brush_MaxPWM",
-                   "Brush_PWM",
-                   "Brush_mVolts",
-                   "Brush_Encoder",
-                   "Brush_RPM",
-                   "Vacuum_MaxPWM",
-                   "Vacuum_PWM",
-                   "Vacuum_CurrentInMA",
-                   "Vacuum_Encoder",
-                   "Vacuum_RPM",
-                   "LeftWheel_MaxPWM",
-                   "LeftWheel_PWM",
-                   "LeftWheel_mVolts",
-                   "LeftWheel_Encoder",
-                   "LeftWheel_PositionInMM",
-                   "LeftWheel_RPM",
-                   "RightWheel_MaxPWM",
-                   "RightWheel_PWM",
-                   "RightWheel_mVolts",
-                   "RightWheel_Encoder",
-                   "RightWheel_PositionInMM",
-                   "RightWheel_RPM",
-                   "Laser_MaxPWM",
-                   "Laser_PWM",
-                   "Laser_mVolts",
-                   "Laser_Encoder",
-                   "Laser_RPM",
-                   "Charger_MaxPWM",
-                   "Charger_PWM",
-                   "Charger_mAH"]
-
-xv11_charger_info = ["FuelPercent",
-                     "BatteryOverTemp",
-                     "ChargingActive",
-                     "ChargingEnabled",
-                     "ConfidentOnFuel",
-                     "OnReservedFuel",
-                     "EmptyFuel",
-                     "BatteryFailure",
-                     "ExtPwrPresent",
-                     "ThermistorPresent[0]",
-                     "ThermistorPresent[1]",
-                     "BattTempCAvg[0]",
-                     "BattTempCAvg[1]",
-                     "VBattV",
-                     "VExtV",
-                     "Charger_mAH",
-                     "MaxPWM"]
+BASE_WIDTH = 248  # millimeters
+MAX_SPEED = 300  # millimeters/second
 
 
-# class xv11():
-class Botvac():
-    def __init__(self, port="/dev/ttyUSB0"):
+class NeatoNode:
+    def __init__(self):
+        """ Start up connection to the Neato Robot. """
+        rospy.init_node('neato_driver')
+
+        self.CMD_RATE = 2
+
+        port = rospy.get_param('~port', "/dev/ttyACM0")
+        rospy.loginfo("Using port: %s" % port)
 
         self.port = serial.Serial(port, 115200, timeout=0.1)
 
@@ -129,8 +67,14 @@ class Botvac():
         rospy.loginfo("Open Serial Port %s ok" % port)
 
         # Storage for motor and sensor information
-        self.state = {"LeftWheel_PositionInMM": 0, "RightWheel_PositionInMM": 0,
-                      "LSIDEBIT": 0, "RSIDEBIT": 0, "LFRONTBIT": 0, "RFRONTBIT": 0}
+        self.state = {
+            "LeftWheel_PositionInMM": 0,
+            "RightWheel_PositionInMM": 0,
+            "LSIDEBIT": 0,
+            "RSIDEBIT": 0,
+            "LFRONTBIT": 0,
+            "RFRONTBIT": 0
+        }
 
         self.stop_state = True
         # turn things on
@@ -160,7 +104,160 @@ class Botvac():
 
         self.flush()
 
-        rospy.loginfo("Init Done")
+        #publishers and subscribers
+        rospy.Subscriber("cmd_vel", Twist, self.cmdVelCb)
+        self.scanPub = rospy.Publisher('base_scan', LaserScan, queue_size=10)
+        self.odomPub = rospy.Publisher('odom', Odometry, queue_size=10)
+        self.buttonPub = rospy.Publisher('button', Button, queue_size=10)
+        self.sensorPub = rospy.Publisher('sensor', Sensor, queue_size=10)
+        self.odomBroadcaster = TransformBroadcaster()
+        self.cmd_vel = [0, 0]
+        self.old_vel = self.cmd_vel
+
+    def spin(self):
+        encoders = [0, 0]
+
+        self.x = 0  # position in xy plane
+        self.y = 0
+        self.th = 0
+        then = rospy.Time.now()
+
+        # things that don't ever change
+        scan_link = rospy.get_param('~frame_id', 'base_laser_link')
+        scan = LaserScan(header=rospy.Header(frame_id=scan_link))
+
+        scan.angle_min = 0.0
+        scan.angle_max = 359.0 * pi / 180.0
+        scan.angle_increment = pi / 180.0
+        scan.range_min = 0.020
+        scan.range_max = 5.0
+
+        odom = Odometry(header=rospy.Header(frame_id="odom"),
+                        child_frame_id='base_footprint')
+
+        button = Button()
+        sensor = Sensor()
+        self.setBacklight(1)
+        self.setLED("Green")
+        # main loop of driver
+        r = rospy.Rate(20)
+        cmd_rate = self.CMD_RATE
+
+        while not rospy.is_shutdown():
+            # notify if low batt
+            # if self.getCharger() < 10:
+            #    print "battery low " + str(self.getCharger()) + "%"
+            # get motor encoder values
+            left, right = self.getMotors()
+
+            cmd_rate = cmd_rate - 1
+            if cmd_rate == 0:
+                # send updated movement commands
+                # if self.cmd_vel != self.old_vel or self.cmd_vel == [0,0]:
+                # max(abs(self.cmd_vel[0]),abs(self.cmd_vel[1])))
+                #self.setMotors(self.cmd_vel[0], self.cmd_vel[1], (abs(self.cmd_vel[0])+abs(self.cmd_vel[1]))/2)
+                self.setMotors(self.cmd_vel[0], self.cmd_vel[1],
+                               max(abs(self.cmd_vel[0]), abs(self.cmd_vel[1])))
+                cmd_rate = self.CMD_RATE
+
+            self.old_vel = self.cmd_vel
+
+            # prepare laser scan
+            scan.header.stamp = rospy.Time.now()
+
+            self.requestScan()
+            scan.ranges, scan.intensities = self.getScanRanges()
+
+            # now update position information
+            dt = (scan.header.stamp - then).to_sec()
+            then = scan.header.stamp
+
+            d_left = (left - encoders[0]) / 1000.0
+            d_right = (right - encoders[1]) / 1000.0
+            encoders = [left, right]
+
+            # print d_left, d_right, encoders
+
+            dx = (d_left + d_right) / 2
+            dth = (d_right - d_left) / (self.base_width / 1000.0)
+
+            x = cos(dth) * dx
+            y = -sin(dth) * dx
+            self.x += cos(self.th) * x - sin(self.th) * y
+            self.y += sin(self.th) * x + cos(self.th) * y
+            self.th += dth
+            # print self.x,self.y,self.th
+
+            # prepare tf from base_link to odom
+            quaternion = Quaternion()
+            quaternion.z = sin(self.th / 2.0)
+            quaternion.w = cos(self.th / 2.0)
+
+            # prepare odometry
+            odom.header.stamp = rospy.Time.now()
+            odom.pose.pose.position.x = self.x
+            odom.pose.pose.position.y = self.y
+            odom.pose.pose.position.z = 0
+            odom.pose.pose.orientation = quaternion
+            odom.twist.twist.linear.x = dx / dt
+            odom.twist.twist.angular.z = dth / dt
+
+            # sensors
+            lsb, rsb, lfb, rfb = self.getDigitalSensors()
+
+            # buttons
+            btn_soft, btn_scr_up, btn_start, btn_back, btn_scr_down = self.getButtons(
+            )
+
+            # publish everything
+            self.odomBroadcaster.sendTransform(
+                (self.x, self.y, 0),
+                (quaternion.x, quaternion.y, quaternion.z, quaternion.w), then,
+                "base_footprint", "odom")
+            self.scanPub.publish(scan)
+            self.odomPub.publish(odom)
+            button_enum = ("Soft_Button", "Up_Button", "Start_Button",
+                           "Back_Button", "Down_Button")
+            sensor_enum = ("Left_Side_Bumper", "Right_Side_Bumper",
+                           "Left_Bumper", "Right_Bumper")
+            for idx, b in enumerate(
+                (btn_soft, btn_scr_up, btn_start, btn_back, btn_scr_down)):
+                if b == 1:
+                    button.value = b
+                    button.name = button_enum[idx]
+                    self.buttonPub.publish(button)
+
+            for idx, b in enumerate((lsb, rsb, lfb, rfb)):
+                if b == 1:
+                    sensor.value = b
+                    sensor.name = sensor_enum[idx]
+                    self.sensorPub.publish(sensor)
+            # wait, then do it again
+            r.sleep()
+
+        # shut down
+        self.setBacklight(0)
+        self.setLED("Off")
+        self.setLDS("off")
+        self.setTestMode("off")
+
+    def sign(self, a):
+        if a >= 0:
+            return 1
+        else:
+            return -1
+
+    def cmdVelCb(self, req):
+        x = req.linear.x * 1000
+        th = req.angular.z * (self.base_width / 2)
+        k = max(abs(x - th), abs(x + th))
+        # sending commands higher than max speed will fail
+
+        if k > self.max_speed:
+            x = x * self.max_speed / k
+            th = th * self.max_speed / k
+
+        self.cmd_vel = [int(x - th), int(x + th)]
 
     def exit(self):
         self.setLDS("off")
@@ -209,7 +306,8 @@ class Botvac():
 
             vals = vals.split(",")
 
-            if ((not last) and ord(vals[0][0]) >= 48 and ord(vals[0][0]) <= 57):
+            if ((not last) and ord(vals[0][0]) >= 48
+                    and ord(vals[0][0]) <= 57):
                 # print angle, vals
                 try:
                     a = int(vals[0])
@@ -222,8 +320,8 @@ class Botvac():
                         intensities.append(0)
                         angle += 1
 
-                    if(e == 0):
-                        ranges.append(r/1000.0)
+                    if (e == 0):
+                        ranges.append(r / 1000.0)
                         intensities.append(i)
                     else:
                         ranges.append(0)
@@ -255,10 +353,8 @@ class Botvac():
         else:
             self.stop_state = False
 
-        self.sendCmd("setmotor" +
-                     " lwheeldist " + str(int(l)) +
-                     " rwheeldist " + str(int(r)) +
-                     " speed " + str(int(s)))
+        self.sendCmd("setmotor" + " lwheeldist " + str(int(l)) +
+                     " rwheeldist " + str(int(r)) + " speed " + str(int(s)))
 
     def getMotors(self):
         """ Update values for motors in the self.state dictionary.
@@ -281,7 +377,10 @@ class Botvac():
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato motors: " + str(ex))
 
-        return [self.state["LeftWheel_PositionInMM"], self.state["RightWheel_PositionInMM"]]
+        return [
+            self.state["LeftWheel_PositionInMM"],
+            self.state["RightWheel_PositionInMM"]
+        ]
 
     def getAnalogSensors(self):
         """ Update values for analog sensors in the self.state dictionary. """
@@ -299,8 +398,8 @@ class Botvac():
                 values = vals.split(",")
                 self.state[values[0]] = int(values[1])
             except Exception as ex:
-                rospy.logerr(
-                    "Exception Reading Neato Analog sensors: " + str(ex))
+                rospy.logerr("Exception Reading Neato Analog sensors: " +
+                             str(ex))
 
     def getDigitalSensors(self):
         """ Update values for digital sensors in the self.state dictionary. """
@@ -320,9 +419,12 @@ class Botvac():
                 self.state[values[0]] = int(values[1])
                 # print "Got Sensor: %s=%s" %(values[0],values[1])
             except Exception as ex:
-                rospy.logerr(
-                    "Exception Reading Neato Digital sensors: " + str(ex))
-        return [self.state["LSIDEBIT"], self.state["RSIDEBIT"], self.state["LFRONTBIT"], self.state["RFRONTBIT"]]
+                rospy.logerr("Exception Reading Neato Digital sensors: " +
+                             str(ex))
+        return [
+            self.state["LSIDEBIT"], self.state["RSIDEBIT"],
+            self.state["LFRONTBIT"], self.state["RFRONTBIT"]
+        ]
 
     def getButtons(self):
         return [0, 0, 0, 0, 0]
@@ -345,8 +447,8 @@ class Botvac():
                 self.state[values[0]] = int(values[1])
 
             except Exception as ex:
-                rospy.logerr(
-                    "Exception Reading Neato charger info: " + str(ex))
+                rospy.logerr("Exception Reading Neato charger info: " +
+                             str(ex))
 
     def setBacklight(self, value):
         if value > 0:
@@ -390,7 +492,7 @@ class Botvac():
         self.reading = True
         line = ""
 
-        while(self.reading and not rospy.is_shutdown()):
+        while (self.reading and not rospy.is_shutdown()):
             try:
                 # read from serial 1 char at a time so we can parse each character
                 val = self.port.read(1)
@@ -399,7 +501,6 @@ class Botvac():
                 val = []
 
             if len(val) > 0:
-
                 '''
                 if ord(val[0]) < 32:
                     print("'%s'"% hex(ord(val[0])))
@@ -421,7 +522,8 @@ class Botvac():
                     with self.readLock:  # got the end of the command response so add the full set of response data as a new item in self.responseData
                         self.responseData.append(list(self.comsData))
 
-                    self.comsData = []  # clear the bucket for the lines of the next command response
+                    self.comsData = [
+                    ]  # clear the bucket for the lines of the next command response
 
                 # NL, terminate the current line and add it to the response data list (comsData) (if it is not a blank line)
                 elif ord(val[0]) == 10:
@@ -430,7 +532,7 @@ class Botvac():
                         #print("Got Line: %s" % line)
                         line = ""  # clear the bufer for the next line
                 else:
-                    line = line+val  # add the character to the current line buffer
+                    line = line + val  # add the character to the current line buffer
 
     # read response data for a command
     # returns tuple (line,last)
@@ -442,7 +544,8 @@ class Botvac():
     def getResponse(self, timeout=1):
 
         # if we don't have any data in currentResponse, wait for more data to come in (or timeout)
-        while (len(self.currentResponse) == 0) and (not rospy.is_shutdown()) and timeout > 0:
+        while (len(self.currentResponse)
+               == 0) and (not rospy.is_shutdown()) and timeout > 0:
 
             # pop a new response data list out of self.responseData (should contain all data lines returned for the last sent command)
             with self.readLock:
@@ -452,9 +555,10 @@ class Botvac():
                 else:
                     self.currentResponse = []  # no data to get
 
-            if len(self.currentResponse) == 0:  # nothing in the buffer so wait (or until timeout)
+            if len(self.currentResponse
+                   ) == 0:  # nothing in the buffer so wait (or until timeout)
                 time.sleep(0.010)
-                timeout = timeout-0.010
+                timeout = timeout - 0.010
 
         # default to nothing to return
         line = ""
@@ -473,18 +577,12 @@ class Botvac():
         return (line, last)
 
     def flush(self):
-        while(1):
+        while (1):
             l, last = self.getResponse(1)
             if l == "":
                 return
 
-# SetLED - Sets the specified LED to on,off,blink, or dim. (TestMode Only)
-# BacklightOn - LCD Backlight On  (mutually exclusive of BacklightOff)
-# BacklightOff - LCD Backlight Off (mutually exclusive of BacklightOn)
-# ButtonAmber - Start Button Amber (mutually exclusive of other Button options)
-# ButtonGreen - Start Button Green (mutually exclusive of other Button options)
-# LEDRed - Start Red LED (mutually exclusive of other Button options)
-# LEDGreen - Start Green LED (mutually exclusive of other Button options)
-# ButtonAmberDim - Start Button Amber Dim (mutually exclusive of other Button options)
-# ButtonGreenDim - Start Button Green Dim (mutually exclusive of other Button options)
-# ButtonOff - Start Button Off
+
+if __name__ == "__main__":
+    robot = NeatoNode()
+    robot.spin()
