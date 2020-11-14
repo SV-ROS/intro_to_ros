@@ -1,10 +1,11 @@
 # Script used to read all help text from Neato.
-# Simply connect Neato and run this script. 
-# All helptext is written to a file in the 
+# Simply connect Neato and run this script.
+# All helptext is written to a file in the
 # same directory called neato_help.txt
 
-# Author: Brannon Vann
+# Author: Brannon Vann brannon.vann@gmail.com
 # License: MIT
+# Modifications or use of this script must maintain the above credit and license
 
 import serial
 import threading
@@ -17,26 +18,30 @@ helpText = "Help output from Neato"
 
 h = serial.readlines()
 
+
 def printLines(line):
-    global helpText 
+    global helpText
     helpText += line
     print(line),
 
+
 def helpResponseProcessor(line):
-   if line.find(' - ') != -1:
-     parts = line.split(" - ")
-     serial.write("help " + parts[0] + '\n')
-     serial.flush()
-     incoming = serial.readlines()
-     map(printLines, incoming)
+    if line.find(' - ') != -1:
+        parts = line.split(" - ")
+        serial.write("help " + parts[0] + '\n')
+        serial.flush()
+        incoming = serial.readlines()
+        map(printLines, incoming)
+
 
 def GetData(line):
-   if line.find(' - ') != -1 and line.startswith('Get'):
-     parts = line.split(" - ")
-     serial.write(parts[0] + '\n')
-     serial.flush()
-     incoming = serial.readlines()
-     map(printLines, incoming)
+    if line.find(' - ') != -1 and line.startswith('Get'):
+        parts = line.split(" - ")
+        serial.write(parts[0] + '\n')
+        serial.flush()
+        incoming = serial.readlines()
+        map(printLines, incoming)
+
 
 # print help output
 map(printLines, h)
