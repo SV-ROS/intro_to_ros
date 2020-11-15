@@ -358,11 +358,36 @@ You can run this package in two modes, Map Making and navigation. You must first
 
 On the Raspberry Pi run:
 
-    roslaunch neato base_only.launch
+    roslaunch neato base_map.launch
 
 On the secondary computer run:
 
     roslaunch neato map_gui.launch
 
+The lidar should start spinning on the Neato and Rviz should load on the secondary computer. I found that if the lidar doesn't show on the secondary computer bue rviz loads, just close it down and restart the above command from the terminal.
 
-The lidar should start spinning on the Neato and Rviz should load on the secondary computer. 
+If you are using a logitech controller as described above you can start driving by holding down the X button and driving with the left stick or left D-pad depending on how your controller is configured (switch on top of F710).
+
+If you are not using the logitech controller and didn't change the config, the easiest thing to do is open a new terminal on either computer and run `rosrun teleop_twist_keyboard teleop_twist_keyboard.py` and the keys indicated to drive around (i,m,j,l).
+
+### Save Your Map
+
+This project takes advantage of static maps (rather than SLAM) so you will need to save your map after you have driven around. The map will be used to run the navigation.
+
+On a new terminal on the Raspberry Pi run:
+
+    roscd neato_nav/maps and rosrun map_server map_saver
+
+### Navigate
+
+Doing this will load the map created prevoiusly and allow you to click on the map in RVIZ and have your robot navigate to that location.
+
+On the Raspberry Pi run:
+
+    roslaunch neato base_nav.launch
+
+On the secondary computer run:
+
+    roslaunch neato map_gui.launch
+
+You can still drive around manually if you wish using the logitech controller or using the keyboard as described above.
