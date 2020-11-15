@@ -1,0 +1,7 @@
+<launch>
+
+    <include file="$(find neato)/launch/include/map.launch" />
+
+
+    <include file="$(find neato)/launch/include/gui.launch" />
+</launch>

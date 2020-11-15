@@ -1,0 +1,17 @@
+<package>
+    <name>neato_nav</name>
+    <version>0.0.1</version>
+    <description>
+    This package contains configuration and launch files for using the navigation stack with Neato robots.
+
+    This package is derived from code originally developed by Michael Ferguson - ferguson@cs.albany.edu with various contributors. The source of the original code is https://github.com/SV-ROS/intro_to_ros/. Original license disclosures left where applicable. 
+  </description>
+    <author email="brannon.vann@gmail.com">Brannon Vann</author>
+    <maintainer email="brannon.vann@gmail.com">Brannon Vann</maintainer>
+    <license>BSD</license>
+    <url>http://ros.org/wiki/neato_nav</url>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <run_depend>neato_node</run_depend>
+</package>

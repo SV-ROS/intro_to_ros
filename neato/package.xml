@@ -1,0 +1,42 @@
+<package>
+    <name>neato</name>
+    <version>0.0.1</version>
+    <description>
+    This is a generic driver for the Neato's robotic vacuums.
+    
+    This package is derived from code originally developed by Michael Ferguson - ferguson@cs.albany.edu with various contributors. The source of the original code is https://github.com/SV-ROS/intro_to_ros/. Original license disclosures left where applicable. 
+  </description>
+    <author email="brannon.vann@gmail.com">Brannon Vann</author>
+    <maintainer email="brannon.vann@gmail.com">Brannon Vann</maintainer>
+    <license>BSD</license>
+    <buildtool_depend>catkin</buildtool_depend>
+    <build_depend>message_generation</build_depend>
+
+    <!-- from neato_driver-->
+    <!--<run_depend>python-serial</run_depend>-->
+    <!-- from neato_node-->
+    <!--<run_depend>message_runtime</run_depend>-->
+    <run_depend>rospy</run_depend>
+    <run_depend>sensor_msgs</run_depend>
+    <run_depend>geometry_msgs</run_depend>
+    <run_depend>nav_msgs</run_depend>
+    <run_depend>tf</run_depend>
+
+    <!-- from neato_robot-->
+    <run_depend>yocs_cmd_vel_mux</run_depend>
+    <run_depend>xacro</run_depend>
+    <run_depend>yocs_velocity_smoother</run_depend>
+    <run_depend>teleop_twist_joy</run_depend>
+    <run_depend>teleop_twist_keyboard</run_depend>
+    <run_depend>move_base</run_depend>
+    <run_depend>map_server</run_depend>
+    <run_depend>amcl</run_depend>
+    <run_depend>gmapping</run_depend>
+    <run_depend>dwa_local_planner</run_depend>
+    <!--
+        <run_depend>joy</run_depend>
+        <run_depend>roscpp</run_depend>
+    -->
+
+    <export></export>
+</package>
