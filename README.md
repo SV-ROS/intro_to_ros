@@ -366,7 +366,7 @@ On the secondary computer run:
 
 The lidar should start spinning on the Neato and Rviz should load on the secondary computer. I found that if the lidar doesn't show on the secondary computer bue rviz loads, just close it down and restart the above command from the terminal.
 
-If you are using a logitech controller as described above you can start driving by holding down the X button and driving with the left stick or left D-pad depending on how your controller is configured (switch on top of F710).
+If you are using a logitech controller as described above you can start driving by holding down the 'A' button and driving with the left stick or left D-pad depending on how your controller is configured (switch on top of F710). The 'A' button on the controller is called the enable_button and is configured in the logitech_teleop.launch file. The 'A' button maps to button 1 but this can be changed if you would like.
 
 If you are not using the logitech controller and didn't change the config, the easiest thing to do is open a new terminal on either computer and run `rosrun teleop_twist_keyboard teleop_twist_keyboard.py` and the keys indicated to drive around (i,m,j,l).
 
@@ -380,7 +380,7 @@ On a new terminal on the Raspberry Pi run:
 
 ### Navigate
 
-Doing this will load the map created prevoiusly and allow you to click on the map in RVIZ and have your robot navigate to that location.
+This will load the map created prevoiusly and allow you to click on the map in RVIZ and have your robot navigate to that location. Close your previous roslaunch tasks mentioned above then:
 
 On the Raspberry Pi run:
 
@@ -391,3 +391,7 @@ On the secondary computer run:
     roslaunch neato map_gui.launch
 
 You can still drive around manually if you wish using the logitech controller or using the keyboard as described above.
+
+## Edit your map
+
+If you would like, you may edit your map using a image editing program like Gimp. Open the `map.pgm` file saved previously. Use the grey, black, and white colors from your map to edit it. Black is a solid object, white is open space, and grey is unknown space. To save, using Gimp, use the Export as function and save in raw form.
