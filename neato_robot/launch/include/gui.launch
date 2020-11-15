@@ -1,3 +1,0 @@
-<launch>
-    <node name="rviz" type="rviz" pkg="rviz" args="-d $(find neato_robot)/config/rviz.rviz" />
-</launch>

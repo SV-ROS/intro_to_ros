@@ -1,6 +1,0 @@
-<launch>
-
-    <include file="$(find neato_robot)/launch/include/map.launch" />
-
-    <include file="$(find neato_robot)/launch/include/base.launch" />
-</launch>
