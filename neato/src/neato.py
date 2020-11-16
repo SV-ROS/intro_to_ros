@@ -41,7 +41,7 @@ from tf.broadcaster import TransformBroadcaster
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Twist
 from geometry_msgs.msg import Quaternion
-from neato_node.msg import Button, Sensor
+from neato.msg import Button, Sensor
 from sensor_msgs.msg import LaserScan
 
 BASE_WIDTH = 248  # millimeters

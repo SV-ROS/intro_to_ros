@@ -25,7 +25,7 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 1. Install on SD card using balenaEtcher following the instructions at the link above <https://www.balena.io/etcher/>
 1. Plug into usb power and boot
 1. On another computer, join `ubiquityrobotXXXX` wi-fi, the password is `robotseverywhere`
-1. ssh into the raspberry pi `ssh ubuntu@10.42.0.1` password: `ubuntu`
+1. ssh into the raspberry pi `ssh ubuntu@10.42.0.1`  password: `ubuntu`
 1. update password: `sudo passwd ubuntu`
 1. update hostname: `sudo pifi set-hostname HOSTNAME` and replace HOSTNAME with whatever you would like your pi's hostname to be.
 1. Add wi-fi connection: `sudo pifi add SSID PASSWORD`. Replace SSID and PASSWORD with your wi-fi's ssid and password.
@@ -50,7 +50,13 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
         nano ~/.vnc/xstartup
 
-    Change and update the the file by adding the bottom 2 lines (cmd+o, cmd+x). Full contents below.
+    Change and update the the file by adding the lines below (cmd+o, cmd+x).
+
+        autocutsel -fork
+        lxterminal &
+        /usr/bin/lxsession -s LXDE &
+
+        Full contents below.
 
         #!/bin/sh
 
@@ -136,7 +142,7 @@ This setup makes use of two computers; A raspberry pi and another computer such 
         cd ~/catkin_ws
         catkin_make
 
-1. On Raspberry Pi, update bashrc to include the setup for neato.
+1. On Raspberry Pi, update .bashrc to include the setup for neato. Make the following changes and save the file. (cmd+o, cmd+x)
 
         nano ~/.bashrc
 
@@ -156,16 +162,27 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
     Just above the original `source /opt/ros/<distro>/setup.bash` there was a character that was cusing the error `\udcc3\udcb8: command not found` every time I opened a new terminal. I just removed the `ø` from `~/.bashrc` to eliminate the error. This is what part of the file looked like when I opened the file using nano as described above.
 
-            if ! shopt -oq posix; then
-                if [ -f /usr/share/bash-completion/bash_completion ]; then
-                    . /usr/share/bash-completion/bash_completion
-                elif [ -f /etc/bash_completion ]; then
-                    . /etc/bash_completion
-                fi
+        if ! shopt -oq posix; then
+            if [ -f /usr/share/bash-completion/bash_completion ]; then
+                . /usr/share/bash-completion/bash_completion
+            elif [ -f /etc/bash_completion ]; then
+                . /etc/bash_completion
             fi
-            ø
+        fi
+        ø
 
-            #source /opt/ros/kinetic/setup.bash
+        #source /opt/ros/kinetic/setup.bash
+
+    At the end of the file paste the below command aliases. This will allow you to use the command before the equal sign to execute the command after the equal sign. 
+
+        alias rl=roslaunch 
+        alias rn=rosnode
+        alias rm=rosmaster
+        alias rm=rosmsg 
+        alias nbn='roslaunch neato base_nav.launch'
+        alias nbm='roslaunch neato base_map.launch'
+        alias nmg='roslaunch neato map_gui.launch'
+        alias nms='roscd neato_nav/maps and rosrun map_server map_saver'
 
 1. Reopen terminal or run `source ~/.bashrc`
 
@@ -185,63 +202,33 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
     If it is going to another file, like ttyACM1 when there was no ttyACM0 then I found unplugging the USB from the neato waiting a minute and plugging back in resolved the issue and it started using ttyACM0 again.
 
-1. Setup File Sharing using netatalk. Depending on the OS version, different versions of netatalk would be installed. Use the instructions that match the installed version.
+1. Setup Fileshare
 
-    Source: <https://gist.github.com/kylemcdonald/c748835f1624e2bf552bf3bd4e6fbcac>
+    When I first configured my pi, i used Netatalk but there were problems with accessing the git files so i switched to samba. Below is the setup for Samba.
 
-    Build and install netatalk.
+        sudo apt-get install samba samba-common-bin'
 
-        cd ~
-        nano install_netatalk3.sh
-        chmod u+x install_netatalk3.sh
+    Edit the config file
 
-    Paste the contents below into the file:
+        sudo nano /etc/samba/smb.conf
 
-        #!/bin/bash
+    find the section called Share Definitions uncomment/set the following settings. Comments removed for brevity.
 
-        # Enable extended attributes on filesystem
-        # http://netatalk.sourceforge.net/wiki/index.php/Install_Netatalk_3.1.11_on_Ubuntu_16.04_Xenial#Setting_Up
+        #======================= Share Definitions =======================
+        [homes]
+        comment = Home Directories
+        browseable = yes
+        read only = no
+        create mask = 0775
+        directory mask = 0775
+        valid users = ubuntu
 
-        # Get system to updated state and install required packages
-        sudo apt update
-        sudo apt full-upgrade -y
-        sudo apt install -y clang make libdb-dev libgcrypt20-dev libavahi-client-dev libpam0g-dev
+    For reference only, start, stop, and restart samba service using the following commands:
 
-        # Get code
-        cd ~
-        wget https://iweb.dl.sourceforge.net/project/netatalk/netatalk/3.1.11/netatalk-3.1.11.tar.bz2
-        tar xf netatalk-3.1.11.tar.bz2 && rm netatalk-3.1.11.tar.bz2
-        cd netatalk-3.1.11
+        sudo /etc/init.d/samba start
+        sudo /etc/init.d/samba stop
+        sudo /etc/init.d/samba restart
 
-        # Build and install
-        ./configure --with-init-style=systemd --disable-static
-        make -j $(grep -c ^processor /proc/cpuinfo)
-        sudo make install-strip
-
-        # Add to /usr/local/etc/afp.conf (uncomment)
-        # [Homes]
-        # basedir regex = /home
-
-        # Enable and start
-        sudo systemctl enable netatalk
-        sudo systemctl start netatalk
-
-    Execute the script:
-
-        install_netatalk3.sh
-
-    Setup to share the home folder.
-
-        sudo nano /etc/netatalk/afp.conf
-
-    Uncommented the `[Homes]` section and configure like:
-
-        [Homes]
-        basedir regex = /home
-
-    Save and exit nano(cmd+o, cmd+x) and restart netatalk
-
-        sudo /etc/init.d/netatalk restart
 
 1. Setup shutdown button
 
@@ -394,4 +381,4 @@ You can still drive around manually if you wish using the logitech controller or
 
 ## Edit your map
 
-If you would like, you may edit your map using a image editing program like Gimp. Open the `map.pgm` file saved previously. Use the grey, black, and white colors from your map to edit it. Black is a solid object, white is open space, and grey is unknown space. To save, using Gimp, use the Export as function and save in raw form.
+If you would like, you may edit your map using a image editing program like Gimp. Open the `map.pgm` file saved previously. Use the grey, black, and white colors from your map to edit it. Black is a solid object, white is open space, and grey is unknown space. To save using Gimp, use the "Export as" function and save in raw form.
