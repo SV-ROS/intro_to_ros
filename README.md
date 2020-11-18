@@ -6,21 +6,21 @@ This project is currently under development but is expected to work. Please reac
 
 ## Sources
 
-This project is derived from the repository located at <https://github.com/SV-ROS/intro_to_ros>. I leveraged the aformentioned project perviously and found it to be very useful. This project leverages much of the code included in that project and originally created by created by Michael Ferguson. It interacts with most of the Neato API and has some clever logic that allows it to interact with a serial port without compromising the main thread for ROS.
+This project is derived from the repository located at <https://github.com/SV-ROS/intro_to_ros>. I leveraged the project previously and found it to be very useful. This project leverages much of the code included in that project and originally created by created by Michael Ferguson. It interacts with most of the Neato API and has some clever logic that allows it to interact with a serial port without compromising the main thread for ROS.
 
 I learned of the above package from a [Servo Magazine article](https://www.servomagazine.com/magazine/article/neato-ros-robot-navigation). They include instructions to expand on the readme in the above repository which helped me. I included those instructions where applicable in the below instructions.
 
-This makes use of the ubiquity robotics image. This saved an enourmous amount of time and makes the process far easier. Thier image is excellent. I don't have one if their physical products but I would imagine they are equally great. Thank you ubiquity robotics. If you are looking for a robot base you can check out their products at <ubiquityrobotics.com>
+This makes use of the ubiquity robotics image. This saved an enormous amount of time and makes the process far easier. Their image is excellent. I don't have one if their physical products but I would imagine they are equally great. Thank you ubiquity robotics. If you are looking for a robot base you can check out their products at <ubiquityrobotics.com>
 
 Several of the tasks below were researched and found on various sites. I sourced those references. Thank you all for your contributions.
 
 ## Setup
 
-This setup makes use of two computers; A raspberry pi and another computer such as a laptop. In muy case I leveraged a Raspberry Pi 3 B+ and a laptop running Ubuntu 18.04. The Raspberry Pi is the ROS master and interacts with the Neato Vac via USB. The secondard computer is used to control navigation of the robot through rviz. I suppose this secondary computer would not be necessary if you don't wish to create a map and have the robot navigate to locations. You could just drive it around with a controller or add additional ROS packages (or your own) to do other things.
+This setup makes use of two computers; A raspberry pi and another computer such as a laptop. In my case I leveraged a Raspberry Pi 3 B+ (and a Pi 4 B on another) and a laptop running Ubuntu 18.04. The Raspberry Pi is the ROS master and interacts with the Neato Vac via USB. The second computer is used to control navigation of the robot through rviz. I suppose this secondary computer would not be necessary if you don't wish to create a map and have the robot navigate to locations. You could just drive it around with a controller or add additional ROS packages (or your own) to do other things.
 
 ### Raspberry Pi Setup
 
-1. Acquire a Raspberry Pi. I used a Model 3 B+ however i believe these instrctions will apply to other models as well.
+1. Acquire a Raspberry Pi. I used a Model 3 B+ or 4 B however I believe these instructions will apply to other models as well.
 1. Install the Ubiquity Robotics image 2020-11-07-ubiquity-xenial-lxde from https://downloads.ubiquityrobotics.com/pi.html
 1. Install on SD card using balenaEtcher following the instructions at the link above <https://www.balena.io/etcher/>
 1. Plug into usb power and boot
@@ -38,6 +38,8 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
 1. Install VNC Server (Optional)
 
+    This will allow you to connect to the Pi via VNC if you want.
+
     source: <https://techloverhd.com/2015/05/install-lxde-vnc-gui-on-ubuntu-debian-server/>
 
     source for copy paste support: <https://raspberrypi.stackexchange.com/a/4475/126746>
@@ -50,7 +52,7 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
         nano ~/.vnc/xstartup
 
-    Change and update the the file by adding the lines below (cmd+o, cmd+x).
+    Change and update the file by adding the lines below (cmd+o, cmd+x).
 
         autocutsel -fork
         lxterminal &
@@ -132,7 +134,7 @@ This setup makes use of two computers; A raspberry pi and another computer such 
         cd ~/catkin_ws/src
         git clone https://github.com/brannonvann/neato.git
 
-1. Install the depedancies using the following command:
+1. Install the dependencies using the following command:
 
         cd ~/catkin_ws
         rosdep install --from-paths src --ignore-src -r -y
@@ -146,43 +148,12 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
         nano ~/.bashrc
 
-    Near the end find the line comment out this line with a #:
-
-        source /opt/ros/<distro>/setup.bash
-
-    And add the ros master environment variable. it should look like this after the changes.
-
-        #source /opt/ros/kinetic/etup.bash
-        source ~/catkin_ws/devel/setup.bash
-        source /home/ubuntu/catkin_ws/devel/setup.bash
-        #source /etc/ubiquity/env.sh
-        export ROS_PARALLEL_JOBS=-j1 # Limit the number of compile threads due to memory limits
-
-        export ROS_MASTER_URI=http://scooter:11311
-
-    Just above the original `source /opt/ros/<distro>/setup.bash` there was a character that was cusing the error `\udcc3\udcb8: command not found` every time I opened a new terminal. I just removed the `ø` from `~/.bashrc` to eliminate the error. This is what part of the file looked like when I opened the file using nano as described above.
-
-        if ! shopt -oq posix; then
-            if [ -f /usr/share/bash-completion/bash_completion ]; then
-                . /usr/share/bash-completion/bash_completion
-            elif [ -f /etc/bash_completion ]; then
-                . /etc/bash_completion
-            fi
-        fi
-        ø
-
-        #source /opt/ros/kinetic/setup.bash
-
     At the end of the file paste the below command aliases. This will allow you to use the command before the equal sign to execute the command after the equal sign. 
 
-        alias rl=roslaunch 
-        alias rn=rosnode
-        alias rm=rosmaster
-        alias rm=rosmsg 
-        alias nbn='roslaunch neato base_nav.launch'
-        alias nbm='roslaunch neato base_map.launch'
-        alias nmg='roslaunch neato map_gui.launch'
-        alias nms='roscd neato_nav/maps and rosrun map_server map_saver'
+        alias startnav='roslaunch neato base_nav.launch'
+        alias startmap='roslaunch neato base_map.launch'
+        alias startui='roslaunch neato map_gui.launch'
+        alias savemap='roscd neato_nav/maps && rosrun map_server map_saver'
 
 1. Reopen terminal or run `source ~/.bashrc`
 
@@ -190,9 +161,9 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
         date
 
-1. Plug in your Neato to the usb port. If you only have the Neato plugged in via USB this should be the correct port. If you have an older pi, I believe you mayGive yourself rights to access the neato robot via usb `sudo chmod 666 /dev/ttyACM0` Th
+1. Plug in your Neato to the usb port. If you only have the Neato plugged in via USB this should be the correct port. If you have an older pi, I believe you may give yourself rights to access the neato robot via usb `sudo chmod 666 /dev/ttyUSB0` but I did not verify this.
 
-    If the command fails then check if the usb is reading/writting to a dfferent file.
+    If the command fails then check if the usb is reading/writing to a different file.
 
         ls /dev/ttyACM*
 
@@ -202,9 +173,77 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
     If it is going to another file, like ttyACM1 when there was no ttyACM0 then I found unplugging the USB from the neato waiting a minute and plugging back in resolved the issue and it started using ttyACM0 again.
 
-1. Setup Fileshare
+1. Setup A file share. Choose one of the options below.
 
-    When I first configured my pi, i used Netatalk but there were problems with accessing the git files so i switched to samba. Below is the setup for Samba.
+I tried all three. So far each have their advantages and disadvantages. I prefer the Netatalk or SSH option but both have trouble with git from VS Code. Samba doesn't have a problem with git but the connection drops frequently and it changed my line endings.
+
+1. File Share Option: SSH via VS Code
+
+You can access your file system using SSH which of course is already setup. Using a text editor such as VS Code has that functionality and can be setup using these instructions: <https://code.visualstudio.com/docs/remote/remote-overview> Furthermore, setup keys to simplify the access (and make it a bit more secure): <https://code.visualstudio.com/docs/remote/troubleshooting#_quick-start-using-ssh-keys>
+
+1. File Share Option: Netatalk
+
+    Source: <https://gist.github.com/kylemcdonald/c748835f1624e2bf552bf3bd4e6fbcac>
+
+    Build and install netatalk.
+
+        cd ~
+        nano install_netatalk3.sh
+        chmod u+x install_netatalk3.sh
+
+    Paste the contents below into the file:
+
+        #!/bin/bash
+
+        # Enable extended attributes on filesystem
+        # http://netatalk.sourceforge.net/wiki/index.php/Install_Netatalk_3.1.11_on_Ubuntu_16.04_Xenial#Setting_Up
+
+        # Get system to updated state and install required packages
+        sudo apt update
+        sudo apt full-upgrade -y
+        sudo apt install -y clang make libdb-dev libgcrypt20-dev libavahi-client-dev libpam0g-dev
+
+        # Get code
+        cd ~
+        wget https://iweb.dl.sourceforge.net/project/netatalk/netatalk/3.1.11/netatalk-3.1.11.tar.bz2
+        tar xf netatalk-3.1.11.tar.bz2 && rm netatalk-3.1.11.tar.bz2
+        cd netatalk-3.1.11
+
+        # Build and install
+        ./configure --with-init-style=systemd --disable-static
+        make -j $(grep -c ^processor /proc/cpuinfo)
+        sudo make install-strip
+
+        # Add to /usr/local/etc/afp.conf (uncomment)
+        # [Homes]
+        # basedir regex = /home
+
+        # Enable and start
+        sudo systemctl enable netatalk
+        sudo systemctl start netatalk
+
+    Execute the script:
+
+        install_netatalk3.sh
+
+    Setup to share the home folder.
+
+        sudo nano /etc/netatalk/afp.conf
+
+    Uncommented the `[Homes]` section and configure like:
+
+        [Homes]
+        basedir regex = /home
+
+    Save and exit nano(cmd+o, cmd+x) and restart netatalk
+
+        sudo /etc/init.d/netatalk restart
+
+
+1. File Share Option: Samba
+
+
+    When I first configured my pi, I used Netatalk but there were problems with accessing the git files so I switched to samba. Below is the setup for Samba.
 
         sudo apt-get install samba samba-common-bin'
 
@@ -295,7 +334,7 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
 ### Secondary computer setup
 
-Note: These instructions were added in retrospect and may be missing some steps. Reference sites in the the [References Section](#references) if problems are encountered.
+Note: These instructions were added in retrospect and may be missing some steps. Reference sites in the [References Section](#references) if problems are encountered.
 
 1. Make sure ROS files are up to date: `rosdep update`
 
@@ -309,7 +348,7 @@ Note: These instructions were added in retrospect and may be missing some steps.
         cd ~/catkin_ws/src
         git clone https://github.com/brannonvann/neato.git
 
-1. Install the depedancies using the following command:
+1. Install the dependencies using the following command:
 
         cd ~/catkin_ws
         rosdep install --from-paths src --ignore-src -r -y
@@ -343,15 +382,15 @@ Add the ros master environment variable. it should look like this after the chan
 
 You can run this package in two modes, Map Making and navigation. You must first make a map if you want to use the navigation.
 
-On the Raspberry Pi run:
+On the Raspberry Pi run (startmap):
 
     roslaunch neato base_map.launch
 
-On the secondary computer run:
+On the secondary computer run (startui):
 
     roslaunch neato map_gui.launch
 
-The lidar should start spinning on the Neato and Rviz should load on the secondary computer. I found that if the lidar doesn't show on the secondary computer bue rviz loads, just close it down and restart the above command from the terminal.
+The lidar should start spinning on the Neato and Rviz should load on the secondary computer. I found that if the lidar doesn't show on the secondary computer when rviz loads, just close it down and restart the above command from the terminal.
 
 If you are using a logitech controller as described above you can start driving by holding down the 'A' button and driving with the left stick or left D-pad depending on how your controller is configured (switch on top of F710). The 'A' button on the controller is called the enable_button and is configured in the logitech_teleop.launch file. The 'A' button maps to button 1 but this can be changed if you would like.
 
@@ -361,19 +400,19 @@ If you are not using the logitech controller and didn't change the config, the e
 
 This project takes advantage of static maps (rather than SLAM) so you will need to save your map after you have driven around. The map will be used to run the navigation.
 
-On a new terminal on the Raspberry Pi run:
+On a new terminal on the Raspberry Pi run (savemap):
 
     roscd neato_nav/maps and rosrun map_server map_saver
 
 ### Navigate
 
-This will load the map created prevoiusly and allow you to click on the map in RVIZ and have your robot navigate to that location. Close your previous roslaunch tasks mentioned above then:
+This will load the map created previously and allow you to click on the map in RVIZ and have your robot navigate to that location. Close your previous roslaunch tasks mentioned above then:
 
-On the Raspberry Pi run:
+On the Raspberry Pi run (startnav):
 
     roslaunch neato base_nav.launch
 
-On the secondary computer run:
+On the secondary computer run (startui):
 
     roslaunch neato map_gui.launch
 
