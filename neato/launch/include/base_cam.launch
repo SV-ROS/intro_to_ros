@@ -41,7 +41,7 @@ This version adds the transform for a Raspicam using the raspicam_node by ubiqui
     <node name="raspicam_to_base" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0.12 -1.57 0 -1.57 base_link raspicam" />
 
     <!-- launch the main base driver node -->
-    <node name="neato" pkg="neato" type="neato.py" output="screen">
+    <node name="neato" pkg="neato" type="driver.py" output="screen">
         <param name="port" value="/dev/ttyACM0" />
         <remap from="cmd_vel" to="robot_cmd_vel" />
         <remap from="/base_scan" to="/scan" />

@@ -25,7 +25,7 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-neato.py is a generic driver for the Neato XV-11 Robotic Vacuum.
+driver.py is a generic driver for the Neato XV-11 Robotic Vacuum.
 """
 
 __author__ = "ferguson@cs.albany.edu (Michael Ferguson)"

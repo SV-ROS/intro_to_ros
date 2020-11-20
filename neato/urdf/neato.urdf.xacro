@@ -5,7 +5,7 @@
         <visual>
             <origin xyz="0.150 -0.165 -0.040" rpy="0 0 1.57" />
             <geometry>
-                <mesh filename="package://neato_node/meshes/neato.dae" scale="0.025 0.025 0.025" />
+                <mesh filename="package://neato/meshes/neato.dae" scale="0.025 0.025 0.025" />
             </geometry>
         </visual>
 
@@ -13,7 +13,7 @@
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://neato_node/meshes/neato.stl"/>
+          <mesh filename="package://neato/meshes/neato.stl"/>
         </geometry>
       </collision>
  -->
