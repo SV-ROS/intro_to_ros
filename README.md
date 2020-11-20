@@ -163,6 +163,8 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
 1. Plug in your Neato to the usb port. If you only have the Neato plugged in via USB this should be the correct port. If you have an older pi, I believe you may give yourself rights to access the neato robot via usb `sudo chmod 666 /dev/ttyUSB0` but I did not verify this.
 
+        sudo chmod 666 /dev/ttyACM0
+
     If the command fails then check if the usb is reading/writing to a different file.
 
         ls /dev/ttyACM*
@@ -267,7 +269,6 @@ You can access your file system using SSH which of course is already setup. Usin
         sudo /etc/init.d/samba start
         sudo /etc/init.d/samba stop
         sudo /etc/init.d/samba restart
-
 
 1. Setup shutdown button
 
@@ -421,3 +422,8 @@ You can still drive around manually if you wish using the logitech controller or
 ## Edit your map
 
 If you would like, you may edit your map using a image editing program like Gimp. Open the `map.pgm` file saved previously. Use the grey, black, and white colors from your map to edit it. Black is a solid object, white is open space, and grey is unknown space. To save using Gimp, use the "Export as" function and save in raw form.
+
+
+## Troubleshooting
+
+I have followed this setup a few times and received different results. The one error i received about 50% of the time was `"left_wheel_joint" was received but not found in URDF`. I wasn't able to figure out what the source of this was or how to resolve the issue. The only thing I found to fix this was to follow the instructions again starting at the top with re-imaging the Raspberry Pi. If you know the cause of this or the solution, please let me know.
