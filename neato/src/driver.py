@@ -104,7 +104,7 @@ class Neato:
 
         self.flush()
 
-        #publishers and subscribers
+        # publishers and subscribers
         rospy.Subscriber("cmd_vel", Twist, self.cmdVelCb)
         self.scanPub = rospy.Publisher('base_scan', LaserScan, queue_size=10)
         self.odomPub = rospy.Publisher('odom', Odometry, queue_size=10)
@@ -155,7 +155,7 @@ class Neato:
                 # send updated movement commands
                 # if self.cmd_vel != self.old_vel or self.cmd_vel == [0,0]:
                 # max(abs(self.cmd_vel[0]),abs(self.cmd_vel[1])))
-                #self.setMotors(self.cmd_vel[0], self.cmd_vel[1], (abs(self.cmd_vel[0])+abs(self.cmd_vel[1]))/2)
+                # self.setMotors(self.cmd_vel[0], self.cmd_vel[1], (abs(self.cmd_vel[0])+abs(self.cmd_vel[1]))/2)
                 self.setMotors(self.cmd_vel[0], self.cmd_vel[1],
                                max(abs(self.cmd_vel[0]), abs(self.cmd_vel[1])))
                 cmd_rate = self.CMD_RATE
@@ -206,8 +206,7 @@ class Neato:
             lsb, rsb, lfb, rfb = self.getDigitalSensors()
 
             # buttons
-            btn_soft, btn_scr_up, btn_start, btn_back, btn_scr_down = self.getButtons(
-            )
+            buttons = self.getButtons()
 
             # publish everything
             self.odomBroadcaster.sendTransform(
@@ -220,11 +219,10 @@ class Neato:
                            "Back_Button", "Down_Button")
             sensor_enum = ("Left_Side_Bumper", "Right_Side_Bumper",
                            "Left_Bumper", "Right_Bumper")
-            for idx, b in enumerate(
-                    (btn_soft, btn_scr_up, btn_start, btn_back, btn_scr_down)):
-                if b == 1:
-                    button.value = b
-                    button.name = button_enum[idx]
+            for key, value in buttons.items():
+                if value == 1:
+                    button.value = value
+                    button.name = key
                     self.buttonPub.publish(button)
 
             for idx, b in enumerate((lsb, rsb, lfb, rfb)):
@@ -427,7 +425,28 @@ class Neato:
         ]
 
     def getButtons(self):
-        return [0, 0, 0, 0, 0]
+        """ Get button values from neato. """
+
+        self.sendCmd("GetButtons")
+
+        if not self.readTo("Button Name"):
+            self.flush()
+            return {}
+
+        last = False
+        buttons = {}
+        while not last:
+            vals, last = self.getResponse()
+            values = vals.split(",")
+            try:
+                #self.state[values[0]] = int(values[1])
+                buttons[values[0]] = (values[1] == '1')
+
+            except Exception as ex:
+                rospy.logerr("Exception Reading Neato charger info: " +
+                             str(ex))
+
+        return buttons
 
     def getCharger(self):
         """ Update values for charger/battery related info in self.state dictionary. """
@@ -463,7 +482,7 @@ class Neato:
         self.setLed(cmd)
 
     def sendCmd(self, cmd):
-        #rospy.loginfo("Sent command: %s"%cmd)
+        # rospy.loginfo("Sent command: %s"%cmd)
         self.port.write("%s\n" % cmd)
 
     def readTo(self, tag, timeout=1):
@@ -515,10 +534,10 @@ class Neato:
                     if len(line) > 0:
                         # add last line to response set if it is not empty
                         self.comsData.append(line)
-                        #print("Got Last Line: %s" % line)
+                        # print("Got Last Line: %s" % line)
                         line = ""  # clear the line buffer for the next line
 
-                    #print ("Got Last")
+                    # print ("Got Last")
                     with self.readLock:  # got the end of the command response so add the full set of response data as a new item in self.responseData
                         self.responseData.append(list(self.comsData))
 
@@ -529,7 +548,7 @@ class Neato:
                 elif ord(val[0]) == 10:
                     if len(line) > 0:
                         self.comsData.append(line)
-                        #print("Got Line: %s" % line)
+                        # print("Got Line: %s" % line)
                         line = ""  # clear the bufer for the next line
                 else:
                     line = line + val  # add the character to the current line buffer
@@ -573,7 +592,7 @@ class Neato:
         else:
             print("Time Out")  # no data so must have timedout
 
-        #rospy.loginfo("Got Response: %s, Last: %d" %(line,last))
+        # rospy.loginfo("Got Response: %s, Last: %d" %(line,last))
         return (line, last)
 
     def flush(self):
