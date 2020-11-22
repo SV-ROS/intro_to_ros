@@ -154,6 +154,8 @@ This setup makes use of two computers; A raspberry pi and another computer such 
         alias startmap='roslaunch neato base_map.launch'
         alias startui='roslaunch neato map_gui.launch'
         alias savemap='roscd neato_nav/maps && rosrun map_server map_saver'
+        alias stopneato='python ~/catkin_ws/src/neato/scripts/stop_neato.py'
+        alias offneato='python ~/catkin_ws/src/neato/scripts/power_off_neato.py'
 
 1. Reopen terminal or run `source ~/.bashrc`
 

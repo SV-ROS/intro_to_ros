@@ -11,7 +11,6 @@
 # Note: This script does not save your serial numbers. #Prevent Serial Write parts below prevent the write out serial numbers.
 
 import serial
-import threading
 
 serial = serial.Serial('/dev/ttyACM0', timeout=1)
 print(serial.name)
