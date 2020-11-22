@@ -5,8 +5,9 @@ find_package(catkin REQUIRED message_generation)
 
 add_message_files(
    FILES
-   Button.msg
-   Sensor.msg
+   BumperEvent.msg
+   ButtonEvent.msg
+   Sensors.msg
  )
 
 generate_messages(
