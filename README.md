@@ -20,23 +20,23 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
 ### Raspberry Pi Setup
 
-1. Acquire a Raspberry Pi. I used a Model 3 B+ or 4 B however I believe these instructions will apply to other models as well.
-1. Install the Ubiquity Robotics image 2020-11-07-ubiquity-xenial-lxde from https://downloads.ubiquityrobotics.com/pi.html
-1. Install on SD card using balenaEtcher following the instructions at the link above <https://www.balena.io/etcher/>
-1. Plug into usb power and boot
-1. On another computer, join `ubiquityrobotXXXX` wi-fi, the password is `robotseverywhere`
-1. ssh into the raspberry pi `ssh ubuntu@10.42.0.1`  password: `ubuntu`
-1. update password: `sudo passwd ubuntu`
-1. update hostname: `sudo pifi set-hostname HOSTNAME` and replace HOSTNAME with whatever you would like your pi's hostname to be.
-1. Add wi-fi connection: `sudo pifi add SSID PASSWORD`. Replace SSID and PASSWORD with your wi-fi's ssid and password.
+1.  Acquire a Raspberry Pi. I used a Model 3 B+ or 4 B however I believe these instructions will apply to other models as well.
+1.  Install the Ubiquity Robotics image 2020-11-07-ubiquity-xenial-lxde from https://downloads.ubiquityrobotics.com/pi.html
+1.  Install on SD card using balenaEtcher following the instructions at the link above <https://www.balena.io/etcher/>
+1.  Plug into usb power and boot
+1.  On another computer, join `ubiquityrobotXXXX` wi-fi, the password is `robotseverywhere`
+1.  ssh into the raspberry pi `ssh ubuntu@10.42.0.1` password: `ubuntu`
+1.  update password: `sudo passwd ubuntu`
+1.  update hostname: `sudo pifi set-hostname HOSTNAME` and replace HOSTNAME with whatever you would like your pi's hostname to be.
+1.  Add wi-fi connection: `sudo pifi add SSID PASSWORD`. Replace SSID and PASSWORD with your wi-fi's ssid and password.
 
-1. Restart raspberry pi: `sudo shutdown -r now`
+1.  Restart raspberry pi: `sudo shutdown -r now`
 
-1. Update Ubuntu: `sudo apt-get update && sudo apt-get upgrade`
+1.  Update Ubuntu: `sudo apt-get update && sudo apt-get upgrade`
 
-1. Disable magni-base (the base of the ubiquityrobotics robot): `sudo systemctl disable magni-base`
+1.  Disable magni-base (the base of the ubiquityrobotics robot): `sudo systemctl disable magni-base`
 
-1. Install VNC Server (Optional)
+1.  Install VNC Server (Optional)
 
     This will allow you to connect to the Pi via VNC if you want.
 
@@ -122,33 +122,33 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
     Access the server from vnc client on another computer using IP_ADDRESS:1 or HOST_NAME:1 (replace IP_ADDRESS or HOST_NAME) with the raspberry pi's using the password you setup above.
 
-1. Make sure ROS files are up to date: `rosdep update`
+1.  Make sure ROS files are up to date: `rosdep update`
 
-1. On both computers, download the neato files.
+1.  On both computers, download the neato files.
 
     Note: do this on both your PC/Laptop and the Raspberry PI.,
 
-   <https://github.com/brannonvann/neato>
+    <https://github.com/brannonvann/neato>
 
-        mkdir -p ~/catkin_ws/src
-        cd ~/catkin_ws/src
-        git clone https://github.com/brannonvann/neato.git
+         mkdir -p ~/catkin_ws/src
+         cd ~/catkin_ws/src
+         git clone https://github.com/brannonvann/neato.git
 
-1. Install the dependencies using the following command:
+1.  Install the dependencies using the following command:
 
         cd ~/catkin_ws
         rosdep install --from-paths src --ignore-src -r -y
 
-1. Run catkin_make on the catkin workspace
+1.  Run catkin_make on the catkin workspace
 
         cd ~/catkin_ws
         catkin_make
 
-1. On Raspberry Pi, update .bashrc to include the setup for neato. Make the following changes and save the file. (cmd+o, cmd+x)
+1.  On Raspberry Pi, update .bashrc to include the setup for neato. Make the following changes and save the file. (cmd+o, cmd+x)
 
         nano ~/.bashrc
 
-    At the end of the file paste the below command aliases. This will allow you to use the command before the equal sign to execute the command after the equal sign. 
+    At the end of the file paste the below command aliases. This will allow you to use the command before the equal sign to execute the command after the equal sign.
 
         alias startnav='roslaunch neato base_nav.launch'
         alias startmap='roslaunch neato base_map.launch'
@@ -157,13 +157,18 @@ This setup makes use of two computers; A raspberry pi and another computer such 
         alias stopneato='python ~/catkin_ws/src/neato/scripts/stop_neato.py'
         alias offneato='python ~/catkin_ws/src/neato/scripts/power_off_neato.py'
 
-1. Reopen terminal or run `source ~/.bashrc`
+1.  Reopen terminal or run `source ~/.bashrc`
 
-1. Check date on the computer to make sure it is correct. If it is not correct you will need to fix it. Mine was correct so don't have instructions on how to update it but it needs to be correct to allow other computer and your raspberry pi to communicate properly.
+1.  Check date on the computer to make sure it is correct.
 
         date
 
-1. Plug in your Neato to the usb port. If you only have the Neato plugged in via USB this should be the correct port. If you have an older pi, I believe you may give yourself rights to access the neato robot via usb `sudo chmod 666 /dev/ttyUSB0` but I did not verify this.
+    To update it install ntppdate and update using ubuntu.
+
+        sudo apt-get install ntpdate
+        sudo ntpdate ntp.ubuntu.com
+
+1.  Plug in your Neato to the usb port. If you only have the Neato plugged in via USB this should be the correct port. If you have an older pi, I believe you may give yourself rights to access the neato robot via usb `sudo chmod 666 /dev/ttyUSB0` but I did not verify this.
 
         sudo chmod 666 /dev/ttyACM0
 
@@ -177,7 +182,7 @@ This setup makes use of two computers; A raspberry pi and another computer such 
 
     If it is going to another file, like ttyACM1 when there was no ttyACM0 then I found unplugging the USB from the neato waiting a minute and plugging back in resolved the issue and it started using ttyACM0 again.
 
-1. Setup A file share. Choose one of the options below.
+1.  Setup A file share. Choose one of the options below.
 
 I tried all three. So far each have their advantages and disadvantages. I prefer the Netatalk or SSH option but both have trouble with git from VS Code. Samba doesn't have a problem with git but the connection drops frequently and it changed my line endings.
 
@@ -185,7 +190,7 @@ I tried all three. So far each have their advantages and disadvantages. I prefer
 
 You can access your file system using SSH which of course is already setup. Using a text editor such as VS Code has that functionality and can be setup using these instructions: <https://code.visualstudio.com/docs/remote/remote-overview> Furthermore, setup keys to simplify the access (and make it a bit more secure): <https://code.visualstudio.com/docs/remote/troubleshooting#_quick-start-using-ssh-keys>
 
-1. File Share Option: Netatalk
+1.  File Share Option: Netatalk
 
     Source: <https://gist.github.com/kylemcdonald/c748835f1624e2bf552bf3bd4e6fbcac>
 
@@ -243,9 +248,7 @@ You can access your file system using SSH which of course is already setup. Usin
 
         sudo /etc/init.d/netatalk restart
 
-
-1. File Share Option: Samba
-
+1.  File Share Option: Samba
 
     When I first configured my pi, I used Netatalk but there were problems with accessing the git files so I switched to samba. Below is the setup for Samba.
 
@@ -272,7 +275,7 @@ You can access your file system using SSH which of course is already setup. Usin
         sudo /etc/init.d/samba stop
         sudo /etc/init.d/samba restart
 
-1. Setup shutdown button
+1.  Setup shutdown button
 
     Setup a shutdown button and script so they pi can be shutdown in the event of a lost connection without unplugging. Unplugging will likely result in a corrupt microSD and require complete repeat of above instructions. These instructions have the full script with the license. They also have alternate implementations that allow for restarting. I modified the script for the purposes of this raspberry pi. The modified script is below.
 
@@ -333,15 +336,15 @@ You can access your file system using SSH which of course is already setup. Usin
 
         python /home/pi/shutdown.py &
 
-1. If you have a logitech controller, plug the usb dongle into the raspberry pi. I use the Logitech F710. If you do not have a logitech controller, change the 
+1.  If you have a logitech controller, plug the usb dongle into the raspberry pi. I use the Logitech F710. If you do not have a logitech controller, change the
 
 ### Secondary computer setup
 
 Note: These instructions were added in retrospect and may be missing some steps. Reference sites in the [References Section](#references) if problems are encountered.
 
-1. Make sure ROS files are up to date: `rosdep update`
+1.  Make sure ROS files are up to date: `rosdep update`
 
-1. On both computers, download the neato files.
+1.  On both computers, download the neato files.
 
     Note: do this on both your PC/Laptop and the Raspberry PI.,
 
@@ -351,17 +354,17 @@ Note: These instructions were added in retrospect and may be missing some steps.
         cd ~/catkin_ws/src
         git clone https://github.com/brannonvann/neato.git
 
-1. Install the dependencies using the following command:
+1.  Install the dependencies using the following command:
 
         cd ~/catkin_ws
         rosdep install --from-paths src --ignore-src -r -y
 
-1. do a catkin_make on the workspace
+1.  do a catkin_make on the workspace
 
         cd ~/catkin_ws
         catkin_make
 
-1. Update bashrc to include the setup for neato and set the ros master to the neato computer. I believe you can use the ip address or the hostname. I used the hostname.
+1.  Update bashrc to include the setup for neato and set the ros master to the neato computer. I believe you can use the ip address or the hostname. I used the hostname.
 
     nano ~/.bashrc
 
@@ -373,11 +376,16 @@ Add the ros master environment variable. it should look like this after the chan
 
     export ROS_MASTER_URI=http://HOSTNAME:11311
 
-1. Reopen terminal or run `source ~/.bashrc`
+1.  Reopen terminal or run `source ~/.bashrc`
 
-1. Check date on both computer. If they don't match make them match. Mine matched so don't have instructions on how to update yet.
+1.  Check date on both computer.
 
         date
+
+    To update it install ntppdate and update using ubuntu.
+
+        sudo apt-get install ntpdate
+        sudo ntpdate ntp.ubuntu.com
 
 ## Running the robot
 
@@ -424,7 +432,6 @@ You can still drive around manually if you wish using the logitech controller or
 ## Edit your map
 
 If you would like, you may edit your map using a image editing program like Gimp. Open the `map.pgm` file saved previously. Use the grey, black, and white colors from your map to edit it. Black is a solid object, white is open space, and grey is unknown space. To save using Gimp, use the "Export as" function and save in raw form.
-
 
 ## Troubleshooting
 

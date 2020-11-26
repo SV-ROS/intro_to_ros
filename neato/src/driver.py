@@ -36,6 +36,7 @@ import roslib
 import time
 import threading
 
+#from enum import Enum
 from math import sin, cos, pi
 from tf.broadcaster import TransformBroadcaster
 from nav_msgs.msg import Odometry
@@ -46,14 +47,26 @@ from sensor_msgs.msg import LaserScan, BatteryState
 
 BASE_WIDTH = 248  # millimeters
 MAX_SPEED = 300  # millimeters/second
+CMD_RATE = 2
+
+
+class LED(Enum):
+    BacklightOn = "BacklightOn"
+    BacklightOff = "BacklightOff"
+    ButtonAmber = "ButtonAmber"
+    ButtonGreen = "ButtonGreen"
+    LEDRed = "LEDRed"
+    LEDGreen = "LEDGreen"
+    ButtonAmberDim = "ButtonAmberDim"
+    ButtonGreenDim = "ButtonGreenDim"
+    ButtonOff = "ButtonOff"
 
 
 class Neato:
+
     def __init__(self):
         """ Start up connection to the Neato Robot. """
-        rospy.init_node('neato')
-
-        self.CMD_RATE = 2
+        rospy.init_node('neato')  # ,anonymous = True
 
         port = rospy.get_param('~port', "/dev/ttyACM0")
         rospy.loginfo("Using port: %s" % port)
@@ -64,14 +77,17 @@ class Neato:
             rospy.logerror("Failed To Open Serial Port")
             return
 
-        rospy.loginfo("Open Serial Port %s ok" % port)
+        rospy.loginfo("Opened Serial Port %s" % port)
 
         # Storage for state tracking
-        self.state = {"LSIDEBIT": False, "RSIDEBIT": False,
+        self.state = {"LeftWheel_PositionInMM": 0, "RightWheel_PositionInMM": 0,
+                      "LSIDEBIT": False, "RSIDEBIT": False,
                       "LFRONTBIT": False, "RFRONTBIT": False,
+                      "LeftDropInMM": 0, "RightDropInMM": 0,
+                      "LeftMagSensor": 0, "RightMagSensor": 0,
                       "BTN_SOFT_KEY": False, "BTN_SCROLL_UP": False,
                       "BTN_START": False, "BTN_BACK": False,
-                      "BTN_SCROLL_DOWN": False
+                      "BTN_SCROLL_DOWN": False,
                       }
 
         self.stop_state = True
@@ -91,18 +107,25 @@ class Neato:
         self.sendCmd("\n\n\n")
         self.port.flushInput()
 
-        self.setTestMode("on")
-        self.setLDS("on")
+        self.setTestMode("On")
+        self.setLDS("On")
+        self.setLed(LED.BacklightOn)
+        self.setLed(LED.LEDGreen)
 
         time.sleep(0.5)
-        self.setLed("ledgreen")
 
         self.base_width = BASE_WIDTH
         self.max_speed = MAX_SPEED
 
+        # set initial read values from neato
+        self.digitalSensors = self.getDigitalSensors()
+        self.analogSensors = self.getAnalogSensors()
+        self.chargerValues = self.getCharger()
+        self.buttons = self.getButtons()
+
         self.flush()
 
-        # publishers and subscribers
+        # initialize publishers and subscribers
         rospy.Subscriber("cmd_vel", Twist, self.cmdVelCb)
         self.scanPub = rospy.Publisher('base_scan', LaserScan, queue_size=10)
         self.odomPub = rospy.Publisher('odom', Odometry, queue_size=10)
@@ -140,28 +163,33 @@ class Neato:
         odom = Odometry(header=rospy.Header(frame_id="odom"),
                         child_frame_id='base_footprint')
 
-        self.setBacklight(1)
-        self.setLED("Green")
         # main loop of driver
         r = rospy.Rate(20)
-        cmd_rate = self.CMD_RATE
+        cycle_count = 0
 
         while not rospy.is_shutdown():
-            # notify if low batt
-            # if self.getCharger() < 10:
-            #    print "battery low " + str(self.getCharger()) + "%"
+
+            # Emergency shutdown checks.
+            print(int(self.chargerValues["FuelPercent"]))
+            if int(self.chargerValues["FuelPercent"]) < 10:
+                print("Neato battery is less than 10%. Terminating Node")
+                rospy.signal_shutdown("Neato battery is less than 10%. Terminating Node")
+                break
+            if self.chargerValues["BatteryFailure"] == '1':
+                print("Neato battery failure. Terminating Node")
+                rospy.signal_shutdown("Neato battery failure. Terminating Node")
+                break
+            if self.chargerValues["EmptyFuel"] == '1':
+                print("Neato battery is empty. Terminating Node")
+                break
+
             # get motor encoder values
             left, right = self.getMotors()
 
-            cmd_rate = cmd_rate - 1
-            if cmd_rate == 0:
+            if cycle_count % 2 == 0:
                 # send updated movement commands
-                # if self.cmd_vel != self.old_vel or self.cmd_vel == [0,0]:
-                # max(abs(self.cmd_vel[0]),abs(self.cmd_vel[1])))
-                # self.setMotors(self.cmd_vel[0], self.cmd_vel[1], (abs(self.cmd_vel[0])+abs(self.cmd_vel[1]))/2)
                 self.setMotors(self.cmd_vel[0], self.cmd_vel[1],
                                max(abs(self.cmd_vel[0]), abs(self.cmd_vel[1])))
-                cmd_rate = self.CMD_RATE
 
             self.old_vel = self.cmd_vel
 
@@ -203,10 +231,27 @@ class Neato:
             odom.twist.twist.angular.z = dth / dt
 
             # read sensors and data
-            digitalSensors = self.getDigitalSensors()
-            analogSensors = self.getAnalogSensors()
-            chargerValues = self.getCharger()
-            buttons = self.getButtons()
+            # Neato cannot handle reads of all sensors every cycle.
+            # use cycle_count to rate limit the reads or
+            # you will get errors like:
+            # navigation costmap2DROS transform timeout.
+            # Could not get robot pose.
+            if cycle_count % 2 == 0:
+                self.digitalSensors = self.getDigitalSensors()
+
+            if cycle_count == 2:
+                self.analogSensors = self.getAnalogSensors()
+
+            if cycle_count == 1:
+                self.buttons = self.getButtons()
+
+            if cycle_count == 3:
+                self.chargerValues = self.getCharger()
+
+            digitalSensors = self.digitalSensors
+            analogSensors = self.analogSensors
+            chargerValues = self.chargerValues
+            buttons = self.buttons
 
             # region Publish Bumper Events
             for i, b in enumerate(("LSIDEBIT", "RSIDEBIT",
@@ -339,11 +384,15 @@ class Neato:
             # wait, then do it again
             r.sleep()
 
+            cycle_count = cycle_count + 1
+            if cycle_count == 4:
+                cycle_count = 0
+
         # shut down
-        self.setBacklight(0)
-        self.setLED("Off")
-        self.setLDS("off")
-        self.setTestMode("off")
+        self.setLed(LED.BacklightOff)
+        self.setLed(LED.ButtonOff)
+        self.setLDS("Off")
+        self.setTestMode("Off")
 
     def sign(self, a):
         if a >= 0:
@@ -364,12 +413,12 @@ class Neato:
         self.cmd_vel = [int(x - th), int(x + th)]
 
     def exit(self):
-        self.setLDS("off")
-        self.setLed("buttonoff")
+        self.setLDS("Off")
+        self.setLed(LED.ButtonOff)
 
         time.sleep(1)
 
-        self.setTestMode("off")
+        self.setTestMode("Off")
         self.port.flush()
 
         self.reading = False
@@ -501,7 +550,7 @@ class Neato:
             try:
                 vals, last = self.getResponse()
                 values = vals.split(",")
-                self.state[values[0]] = int(values[1])
+                #self.state[values[0]] = int(values[1])
                 analogSensors[values[0]] = int(values[1])
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato Analog sensors: " +
@@ -526,7 +575,7 @@ class Neato:
                 # print vals
                 values = vals.split(",")
                 # print "Got Sensor: %s=%s" %(values[0],values[1])
-                self.state[values[0]] = int(values[1])
+                #self.state[values[0]] = int(values[1])
                 digitalSensors[values[0]] = int(values[1])
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato Digital sensors: " +
@@ -548,7 +597,7 @@ class Neato:
             vals, last = self.getResponse()
             values = vals.split(",")
             try:
-                self.state[values[0]] = (values[1] == '1')
+                #self.state[values[0]] = (values[1] == '1')
                 buttons[values[0]] = (values[1] == '1')
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato button info: " +
@@ -574,16 +623,16 @@ class Neato:
             try:
                 if values[0] in ["VBattV", "VExtV"]:
                     # convert to millivolt to maintain as int and become mVBattV & mVExtV.
-                    self.state['m' + values[0]] = int(float(values[1]) * 100)
+                    #self.state['m' + values[0]] = int(float(values[1]) * 100)
                     chargerValues['m' + values[0]] = int(
                         float(values[1]) * 100)
                 elif values[0] in ["BatteryOverTemp", "ChargingActive", "ChargingEnabled", "ConfidentOnFuel", "OnReservedFuel", "EmptyFuel", "BatteryFailure", "ExtPwrPresent"]:
                     # boolean values
-                    self.state[values[0]] = (values[1] == '1')
+                    #self.state[values[0]] = (values[1] == '1')
                     chargerValues[values[0]] = (values[1] == '1')
                 elif values[0] in ["FuelPercent", "MaxPWM", "PWM"]:
                     # int values
-                    self.state[values[0]] = int(values[1])
+                    #self.state[values[0]] = int(values[1])
                     chargerValues[values[0]] = int(values[1])
                 # other values not supported.
 
@@ -592,17 +641,8 @@ class Neato:
                              str(ex))
         return chargerValues
 
-    def setBacklight(self, value):
-        if value > 0:
-            self.sendCmd("setled backlighton")
-        else:
-            self.sendCmd("setled backlightoff")
-
-    def setLed(self, cmd):
-        self.sendCmd("setled %s" % cmd)
-
-    def setLED(self, cmd):
-        self.setLed(cmd)
+    def setLed(self, command):
+        self.sendCmd("setled %s" % command)
 
     def sendCmd(self, cmd):
         # rospy.loginfo("Sent command: %s"%cmd)
