@@ -115,19 +115,19 @@ class Neato:
         self.setLed(LED.BacklightOn)
         self.setLed(LED.LEDGreen)
 
-        if START_LIDAR:
-            self.setLDS("On")
-
         time.sleep(0.5)
 
         self.base_width = BASE_WIDTH
         self.max_speed = MAX_SPEED
 
         # set initial read values from neato
-        self.digitalSensors = self.getDigitalSensors()
-        self.analogSensors = self.getAnalogSensors()
-        self.chargerValues = self.getCharger()
-        self.buttons = self.getButtons()
+        self.getDigitalSensors()
+        time.sleep(0.5)
+        self.getAnalogSensors()
+        time.sleep(0.5)
+        self.getCharger()
+        time.sleep(0.5)
+        self.getButtons()
 
         self.flush()
 
@@ -172,7 +172,7 @@ class Neato:
         # main loop of driver
         r = rospy.Rate(20)
         cycle_count = 0
-        bumperEngaged = None
+        self.bumperEngaged = None
 
         while not rospy.is_shutdown():
 
@@ -196,19 +196,23 @@ class Neato:
 
             if not self.lifted and cycle_count % 2 == 0:
 
-                #rospy.loginfo(self.moving_forward, bumperEngaged)
+                # bumper engaged procedure
                 # left or right bumpers
-                if self.moving_forward and bumperEngaged == 0:
+                if self.moving_forward and self.bumperEngaged == 0:
                     # left bump
                     self.setMotors(-100, -110, MAX_SPEED/2)
 
-                if self.moving_forward and bumperEngaged == 1:
+                if self.moving_forward and self.bumperEngaged == 1:
                     # right bump
                     self.setMotors(-110, -100, MAX_SPEED/2)
 
                 # all other bumpers
-                elif self.moving_forward and bumperEngaged > 1:
+                elif self.moving_forward and self.bumperEngaged > 1:
                     self.setMotors(-100, -100, MAX_SPEED/2)
+
+                # undock proceedure
+                if self.cmd_vel[0] and self.chargerValues["ChargingActive"]:
+                    self.setMotors(-400, -400, MAX_SPEED/2)
 
                 else:
                     # send updated movement commands
@@ -220,7 +224,7 @@ class Neato:
             # prepare laser scan
             scan.header.stamp = rospy.Time.now()
 
-            self.requestScan()
+            self.getldsscan()
             scan.ranges, scan.intensities = self.getScanRanges()
 
             # now update position information
@@ -260,156 +264,93 @@ class Neato:
             # you will get errors like:
             # navigation costmap2DROS transform timeout.
             # Could not get robot pose.
+
             if cycle_count % 2 == 0:
-                self.digitalSensors = self.getDigitalSensors()
+                self.getDigitalSensors()
+
+                for i, b in enumerate(("LSIDEBIT", "RSIDEBIT",
+                                       "LFRONTBIT", "RFRONTBIT")):
+
+                    engaged = None
+                    engaged = self.digitalSensors[b]  # Bumper Switches
+                    self.bumperHandler(b, engaged, i)
 
             if cycle_count == 2:
-                self.analogSensors = self.getAnalogSensors()
+                self.getAnalogSensors()
+
+                for i, b in enumerate(("LeftDropInMM", "RightDropInMM",
+                                       "LeftMagSensor", "RightMagSensor")):
+
+                    engaged = None
+                    if i < 2:
+                        # Optical Sensors (no drop: ~0-60)
+                        engaged = (self.analogSensors[b] > 100)
+                    else:
+                        # Mag Sensors (no mag: ~ +/-20)
+                        engaged = (abs(self.analogSensors[b]) > 20)
+
+                    self.bumperHandler(b, engaged, i)
 
             if cycle_count == 1:
-                self.buttons = self.getButtons()
+                self.getButtons()
+
+                # region Publish Button Events
+
+                for i, b in enumerate(("BTN_SOFT_KEY", "BTN_SCROLL_UP", "BTN_START",
+                                       "BTN_BACK", "BTN_SCROLL_DOWN")):
+                    engaged = (self.buttons[b] == 1)
+                    if engaged != self.state[b]:
+                        buttonEvent = ButtonEvent()
+                        buttonEvent.button = i
+                        buttonEvent.engaged = engaged
+                        self.buttonEventPub.publish(buttonEvent)
+
+                    self.state[b] = engaged
+
+                # endregion Publish Button Info
 
             if cycle_count == 3:
-                self.chargerValues = self.getCharger()
+                self.getCharger()
 
-            # region Publish Bumper Events
-            for i, b in enumerate(("LSIDEBIT", "RSIDEBIT",
-                                   "LFRONTBIT", "RFRONTBIT",
-                                   "LeftDropInMM", "RightDropInMM",
-                                   "LeftMagSensor", "RightMagSensor")):
-                engaged = None
-                if i < 4:
-                    #rospy.loginfo([b, self.digitalSensors[b]])
-                    engaged = self.digitalSensors[b]  # Bumper Switches
-                elif i < 6:
-                    # Optical Sensors (no drop: ~0-60)
-                    #rospy.loginfo(b, self.analogSensors[b])
-                    engaged = (self.analogSensors[b] > 100)
-                else:
-                    # Mag Sensors (no mag: ~ +/-20)
-                    #rospy.loginfo(b, self.analogSensors[b])
-                    engaged = (abs(self.analogSensors[b]) > 20)
+                # region Publish Battery Info
+                # pulls data from analogSensors and charger info to publish battery state
+                battery = BatteryState()
+                # http://docs.ros.org/en/api/sensor_msgs/html/msg/BatteryState.html
 
-                if engaged != self.state[b]:
+                power_supply_health = 1  # POWER_SUPPLY_HEALTH_GOOD
+                if self.chargerValues["BatteryOverTemp"]:
+                    power_supply_health = 2  # POWER_SUPPLY_HEALTH_OVERHEAT
+                elif self.chargerValues["EmptyFuel"]:
+                    power_supply_health = 3  # POWER_SUPPLY_HEALTH_DEAD
+                elif self.chargerValues["BatteryFailure"]:
+                    power_supply_health = 5  # POWER_SUPPLY_HEALTH_UNSPEC_FAILURE
 
-                    # set bumper
-                    if not bumperEngaged:
-                        bumperEngaged = i
+                power_supply_status = 3  # POWER_SUPPLY_STATUS_NOT_CHARGING
+                if self.chargerValues["ChargingActive"]:
+                    power_supply_status = 1  # POWER_SUPPLY_STATUS_CHARGING
+                elif (self.chargerValues["FuelPercent"] == 100):
+                    power_supply_status = 4  # POWER_SUPPLY_STATUS_FULL
 
-                    # clear bumper
-                    elif bumperEngaged == i and not engaged:
-                        bumperEngaged = None
+                battery.voltage = self.analogSensors["BatteryVoltageInmV"] // 1000
+                # battery.temperature = self.analogSensors["BatteryTemp0InC"]
+                battery.current = self.analogSensors["CurrentInmA"] // 1000
+                # battery.charge
+                # battery.capacity
+                # battery.design_capacity
+                battery.percentage = self.chargerValues["FuelPercent"]
+                battery.power_supply_status = power_supply_status
+                battery.power_supply_health = power_supply_health
+                battery.power_supply_technology = 1  # POWER_SUPPLY_TECHNOLOGY_NIMH
+                battery.present = self.chargerValues['FuelPercent'] > 0
+                # battery.cell_voltage
+                # battery.cell_temperature
+                # battery.location
+                # battery.serial_number
+                self.batteryPub.publish(battery)
 
-                    bumperEvent = BumperEvent()
-                    bumperEvent.bumper = i
-                    bumperEvent.engaged = engaged
-                    # rospy.loginfobumperEvent)
-                    self.bumperEventPub.publish(bumperEvent)
+                # endregion Publish Battery Info
 
-                self.state[b] = engaged
-            # endregion Publish Bumper Info
-
-            # region Publish Battery Info
-
-            battery = BatteryState()
-            # http://docs.ros.org/en/api/sensor_msgs/html/msg/BatteryState.html
-
-            power_supply_health = 1  # POWER_SUPPLY_HEALTH_GOOD
-            if self.chargerValues["BatteryOverTemp"]:
-                power_supply_health = 2  # POWER_SUPPLY_HEALTH_OVERHEAT
-            elif self.chargerValues["EmptyFuel"]:
-                power_supply_health = 3  # POWER_SUPPLY_HEALTH_DEAD
-            elif self.chargerValues["BatteryFailure"]:
-                power_supply_health = 5  # POWER_SUPPLY_HEALTH_UNSPEC_FAILURE
-
-            power_supply_status = 3  # POWER_SUPPLY_STATUS_NOT_CHARGING
-            if self.chargerValues["ChargingActive"]:
-                power_supply_status = 1  # POWER_SUPPLY_STATUS_CHARGING
-            elif (self.chargerValues["FuelPercent"] == 100):
-                power_supply_status = 4  # POWER_SUPPLY_STATUS_FULL
-
-            battery.voltage = self.analogSensors["BatteryVoltageInmV"] // 1000
-            # battery.temperature = self.analogSensors["BatteryTemp0InC"]
-            battery.current = self.analogSensors["CurrentInmA"] // 1000
-            # battery.charge
-            # battery.capacity
-            # battery.design_capacity
-            battery.percentage = self.chargerValues["FuelPercent"]
-            battery.power_supply_status = power_supply_status
-            battery.power_supply_health = power_supply_health
-            battery.power_supply_technology = 1  # POWER_SUPPLY_TECHNOLOGY_NIMH
-            battery.present = self.chargerValues['FuelPercent'] > 0
-            # battery.cell_voltage
-            # battery.cell_temperature
-            # battery.location
-            # battery.serial_number
-            self.batteryPub.publish(battery)
-
-            # endregion Publish Battery Info
-
-            # region Publish Button Events
-
-            for i, b in enumerate(("BTN_SOFT_KEY", "BTN_SCROLL_UP", "BTN_START",
-                                   "BTN_BACK", "BTN_SCROLL_DOWN")):
-                engaged = (self.buttons[b] == 1)
-                if engaged != self.state[b]:
-                    buttonEvent = ButtonEvent()
-                    buttonEvent.button = i
-                    buttonEvent.engaged = engaged
-                    self.buttonEventPub.publish(buttonEvent)
-
-                self.state[b] = engaged
-
-            # endregion Publish Button Info
-
-            # region Publish Sensors
-
-            self.sensors = Sensors()
-
-            # for i, s in enumerate(self.analogSensors):
-            #    self.sensors[s] = self.analogSensors[s]
-
-            # for i, s in enumerate(self.digitalSensors):
-            #    self.sensors[s] = self.digitalSensors
-
-            # if you receive an error similar to "KeyError: 'XTemp0InC'" just comment out the value
-            self.WallSensorInMM = self.analogSensors["WallSensorInMM"]
-            self.sensors.BatteryVoltageInmV = self.analogSensors["BatteryVoltageInmV"]
-            self.sensors.LeftDropInMM = self.analogSensors["LeftDropInMM"]
-            self.sensors.RightDropInMM = self.analogSensors["RightDropInMM"]
-            #self.sensors.XTemp0InC = self.analogSensors["XTemp0InC"]
-            #self.sensors.XTemp1InC = self.analogSensors["XTemp1InC"]
-            self.sensors.LeftMagSensor = self.analogSensors["LeftMagSensor"]
-            self.sensors.RightMagSensor = self.analogSensors["RightMagSensor"]
-            self.sensors.UIButtonInmV = self.analogSensors["UIButtonInmV"]
-            self.sensors.VacuumCurrentInmA = self.analogSensors["VacuumCurrentInmA"]
-            self.sensors.ChargeVoltInmV = self.analogSensors["ChargeVoltInmV"]
-            self.sensors.BatteryTemp0InC = self.analogSensors["BatteryTemp0InC"]
-            self.sensors.BatteryTemp1InC = self.analogSensors["BatteryTemp1InC"]
-            self.sensors.CurrentInmA = self.analogSensors["CurrentInmA"]
-            self.sensors.SideBrushCurrentInmA = self.analogSensors["SideBrushCurrentInmA"]
-            self.sensors.VoltageReferenceInmV = self.analogSensors["VoltageReferenceInmV"]
-            self.sensors.AccelXInmG = self.analogSensors["AccelXInmG"]
-            self.sensors.AccelYInmG = self.analogSensors["AccelYInmG"]
-            self.sensors.AccelZInmG = self.analogSensors["AccelZInmG"]
-
-            self.sensors.SNSR_DC_JACK_CONNECT = self.digitalSensors["SNSR_DC_JACK_CONNECT"]
-            self.sensors.SNSR_DUSTBIN_IS_IN = self.digitalSensors["SNSR_DUSTBIN_IS_IN"]
-            self.sensors.SNSR_LEFT_WHEEL_EXTENDED = self.digitalSensors["SNSR_LEFT_WHEEL_EXTENDED"]
-            self.sensors.SNSR_RIGHT_WHEEL_EXTENDED = self.digitalSensors[
-                "SNSR_RIGHT_WHEEL_EXTENDED"]
-            self.sensors.LSIDEBIT = self.digitalSensors["LSIDEBIT"]
-            self.sensors.LFRONTBIT = self.digitalSensors["LFRONTBIT"]
-            self.sensors.RSIDEBIT = self.digitalSensors["RSIDEBIT"]
-            self.sensors.RFRONTBIT = self.digitalSensors["RFRONTBIT"]
-
-            self.lifted = (
-                self.sensors.SNSR_LEFT_WHEEL_EXTENDED or self.sensors.SNSR_RIGHT_WHEEL_EXTENDED)
-
-            self.sensorsPub.publish(self.sensors)
-
-            # endregion Publish Sensors
-
+            self.publishSensors()
             # region publish lidar and odom
             self.odomBroadcaster.sendTransform(
                 (self.x, self.y, 0),
@@ -430,8 +371,79 @@ class Neato:
         # shut down
         self.setLed(LED.BacklightOff)
         self.setLed(LED.ButtonOff)
-        self.setLDS("Off")
-        self.setTestMode("Off")
+        self.setLdsRotation("Off")
+        self.testmode("Off")
+
+    def publishSensors():
+
+        # region Publish Sensors
+
+        self.sensors = Sensors()
+
+        # for i, s in enumerate(self.analogSensors):
+        #    self.sensors[s] = self.analogSensors[s]
+
+        # for i, s in enumerate(self.digitalSensors):
+        #    self.sensors[s] = self.digitalSensors
+
+        # if you receive an error similar to "KeyError: 'XTemp0InC'" after startup
+        # just comment out the value. It means it's not supported by your neato.
+
+        self.WallSensorInMM = self.analogSensors["WallSensorInMM"]
+        self.sensors.BatteryVoltageInmV = self.analogSensors["BatteryVoltageInmV"]
+        self.sensors.LeftDropInMM = self.analogSensors["LeftDropInMM"]
+        self.sensors.RightDropInMM = self.analogSensors["RightDropInMM"]
+        # self.sensors.XTemp0InC = self.analogSensors["XTemp0InC"]
+        # self.sensors.XTemp1InC = self.analogSensors["XTemp1InC"]
+        self.sensors.LeftMagSensor = self.analogSensors["LeftMagSensor"]
+        self.sensors.RightMagSensor = self.analogSensors["RightMagSensor"]
+        self.sensors.UIButtonInmV = self.analogSensors["UIButtonInmV"]
+        self.sensors.VacuumCurrentInmA = self.analogSensors["VacuumCurrentInmA"]
+        self.sensors.ChargeVoltInmV = self.analogSensors["ChargeVoltInmV"]
+        self.sensors.BatteryTemp0InC = self.analogSensors["BatteryTemp0InC"]
+        self.sensors.BatteryTemp1InC = self.analogSensors["BatteryTemp1InC"]
+        self.sensors.CurrentInmA = self.analogSensors["CurrentInmA"]
+        self.sensors.SideBrushCurrentInmA = self.analogSensors["SideBrushCurrentInmA"]
+        self.sensors.VoltageReferenceInmV = self.analogSensors["VoltageReferenceInmV"]
+        self.sensors.AccelXInmG = self.analogSensors["AccelXInmG"]
+        self.sensors.AccelYInmG = self.analogSensors["AccelYInmG"]
+        self.sensors.AccelZInmG = self.analogSensors["AccelZInmG"]
+
+        self.sensors.SNSR_DC_JACK_CONNECT = self.digitalSensors["SNSR_DC_JACK_CONNECT"]
+        self.sensors.SNSR_DUSTBIN_IS_IN = self.digitalSensors["SNSR_DUSTBIN_IS_IN"]
+        self.sensors.SNSR_LEFT_WHEEL_EXTENDED = self.digitalSensors["SNSR_LEFT_WHEEL_EXTENDED"]
+        self.sensors.SNSR_RIGHT_WHEEL_EXTENDED = self.digitalSensors[
+            "SNSR_RIGHT_WHEEL_EXTENDED"]
+        self.sensors.LSIDEBIT = self.digitalSensors["LSIDEBIT"]
+        self.sensors.LFRONTBIT = self.digitalSensors["LFRONTBIT"]
+        self.sensors.RSIDEBIT = self.digitalSensors["RSIDEBIT"]
+        self.sensors.RFRONTBIT = self.digitalSensors["RFRONTBIT"]
+
+        self.lifted = (
+            self.sensors.SNSR_LEFT_WHEEL_EXTENDED or self.sensors.SNSR_RIGHT_WHEEL_EXTENDED)
+
+        self.sensorsPub.publish(self.sensors)
+
+        # endregion Publish Sensors
+
+    def bumperHandler(self, name, engaged, i):
+        if engaged != self.state[name]:
+
+            # set bumper
+            if not this.bumperEngaged:
+                this.bumperEngaged = bumperIndex
+
+            # clear bumper
+            elif this.bumperEngaged == bumperIndex and not engaged:
+                this.bumperEngaged = None
+
+            bumperEvent = BumperEvent()
+            bumperEvent.bumper = bumperIndex
+            bumperEvent.engaged = engaged
+            # rospy.loginfobumperEvent)
+            self.bumperEventPub.publish(bumperEvent)
+
+        self.state[name] = engaged
 
     def sign(self, a):
         if a >= 0:
@@ -452,12 +464,12 @@ class Neato:
         self.cmd_vel = [int(x - th), int(x + th)]
 
     def exit(self):
-        self.setLDS("Off")
+        self.setLdsRotation("Off")
         self.setLed(LED.ButtonOff)
 
         time.sleep(1)
 
-        self.setTestMode("Off")
+        self.testmode("Off")
         self.port.flush()
 
         self.reading = False
@@ -465,14 +477,14 @@ class Neato:
 
         self.port.close()
 
-    def setTestMode(self, value):
+    def testmode(self, value):
         """ Turn test mode on/off. """
         self.sendCmd("testmode " + value)
 
-    def setLDS(self, value):
+    def setLdsRotation(self, value):
         self.sendCmd("setldsrotation " + value)
 
-    def requestScan(self):
+    def getldsscan(self):
         """ Ask neato for an array of scan reads. """
         self.sendCmd("getldsscan")
 
@@ -591,11 +603,14 @@ class Neato:
             try:
                 vals, last = self.getResponse()
                 values = vals.split(",")
-                #self.state[values[0]] = int(values[1])
+                # self.state[values[0]] = int(values[1])
                 analogSensors[values[0]] = int(values[1])
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato Analog sensors: " +
                              str(ex))
+
+        if analogSensors:
+            self.analogSensors = analogSensors
 
         return analogSensors
 
@@ -616,11 +631,15 @@ class Neato:
                 # rospy.loginfo(vals)
                 values = vals.split(",")
                 # rospy.loginfo("Got Sensor: %s=%s" %(values[0],values[1]))
-                #self.state[values[0]] = int(values[1])
+                # self.state[values[0]] = int(values[1])
                 digitalSensors[values[0]] = int(values[1])
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato Digital sensors: " +
                              str(ex))
+
+        if digitalSensors:
+            self.digitalSensors = digitalSensors
+
         return digitalSensors
 
     def getButtons(self):
@@ -638,11 +657,14 @@ class Neato:
             vals, last = self.getResponse()
             values = vals.split(",")
             try:
-                #self.state[values[0]] = (values[1] == '1')
+                # self.state[values[0]] = (values[1] == '1')
                 buttons[values[0]] = (values[1] == '1')
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato button info: " +
                              str(ex))
+
+        if buttons:
+            self.buttons = buttons
 
         return buttons
 
@@ -664,22 +686,25 @@ class Neato:
             try:
                 if values[0] in ["VBattV", "VExtV"]:
                     # convert to millivolt to maintain as int and become mVBattV & mVExtV.
-                    #self.state['m' + values[0]] = int(float(values[1]) * 100)
+                    # self.state['m' + values[0]] = int(float(values[1]) * 100)
                     chargerValues['m' + values[0]] = int(
                         float(values[1]) * 100)
                 elif values[0] in ["BatteryOverTemp", "ChargingActive", "ChargingEnabled", "ConfidentOnFuel", "OnReservedFuel", "EmptyFuel", "BatteryFailure", "ExtPwrPresent"]:
                     # boolean values
-                    #self.state[values[0]] = (values[1] == '1')
+                    # self.state[values[0]] = (values[1] == '1')
                     chargerValues[values[0]] = (values[1] == '1')
                 elif values[0] in ["FuelPercent", "MaxPWM", "PWM"]:
                     # int values
-                    #self.state[values[0]] = int(values[1])
+                    # self.state[values[0]] = int(values[1])
                     chargerValues[values[0]] = int(values[1])
                 # other values not supported.
 
             except Exception as ex:
                 rospy.logerr("Exception Reading Neato charger info: " +
                              str(ex))
+
+        if chargerValues:
+            self.chargerValues = chargerValues
         return chargerValues
 
     def setLed(self, command):
