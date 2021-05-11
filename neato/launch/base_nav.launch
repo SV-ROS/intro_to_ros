@@ -1,0 +1,10 @@
+<launch>
+
+    <arg name="map_name" default="map" />
+
+    <include file="$(find neato)/launch/include/nav.launch">
+        <arg name="map_name" value="$(arg map_name)" />
+    </include>
+
+    <include file="$(find neato)/launch/include/base.launch" />
+</launch>
