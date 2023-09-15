@@ -28,7 +28,7 @@ Other useful info on the Lidar
 https://github.com/rohbotics/xv11hacking/tree/master/mainSpace
 
 --
-## Setingup the Robot/Rasperry PI
+## Settingup the Robot/Rasperry PI
 -------
 
 ### Initial SD Card Image
